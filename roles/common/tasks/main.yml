@@ -1,6 +1,5 @@
 ---
 # tasks file for common
-### == 事前タスク
 - name: set OS varibleds
   ansible.builtin.include_vars: "{{ item }}"
   with_first_found:
@@ -9,27 +8,25 @@
 
 - name: フォルダ回収先の作成
   ansible.builtin.include_tasks: roles/01-file_Recovery/tasks/1pre_mkdir.yml
-### == 事前タスク END
 
-### == ディストリビューション依存環境設定
 - name: "{{ ansible_os_family }}環境設定"
   ansible.builtin.include_tasks: "include/{{ ansible_os_family }}.yml"
   tags: task_distro
 
-### rootユーザー設定
 - name: root ユーザー環境変数
   ansible.builtin.include_tasks: include/root.yml
   tags: task_user
 
-### ansible admin ユーザー設定
 - name: Admin ユーザー環境変数
   ansible.builtin.include_tasks: include/ansible_admin_user.yml
   tags: task_user
 
-### == 事後タスク
+- name: ホスト名の設定
+  ansible.builtin.include_tasks: include/hostname.yml
+  tags: task_user
+
 - name: ファイル回収
   ansible.builtin.include_tasks: roles/01-file_Recovery/tasks/2post_Recovery.yml
-### == 事後タスク END
 
 - name: Prometheus exporter Gossる
   ansible.builtin.include_tasks:

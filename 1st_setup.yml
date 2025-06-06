@@ -5,5 +5,4 @@
   become: true
   roles:
     - { role: ssh_setup, tags: role_ssh }
-    - { role: repo_cli, tags: role_repo, when: ansible_os_family == 'RedHat' or ansible_os_family == 'Rocky'}
     - { role: common, tags: role_com }

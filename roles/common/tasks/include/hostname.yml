@@ -1,0 +1,29 @@
+---
+
+- name: ホスト名を変更
+  ansible.builtin.hostname:
+    name: "{{ server_hostname }}"
+  register: host_result
+
+- name: ホスト名
+  ansible.builtin.debug:
+    var: host_result.ansible_facts
+
+- name: hostsファイル変更
+  block:
+    - name: hostsファイルをバックアップ
+      ansible.builtin.copy:
+        src: /etc/hosts
+        dest: "{{ linux_remote_backup_dir }}/hosts"
+        mode: "0644"
+        force: false
+        remote_src: true
+      register: cp_result
+      when: not ansible_check_mode
+
+    - name: hostsファイルを転送
+      ansible.builtin.template:
+        src: "{{ ansible_os_family }}/hosts.j2"
+        dest: /etc/hosts
+        mode: "0644"
+      register: cp_result
