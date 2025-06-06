@@ -7,7 +7,7 @@
     - "vars/{{ ansible_os_family }}.yml"
 
 - name: フォルダ回収先の作成
-  ansible.builtin.include_tasks: roles/01-file_Recovery/tasks/1pre_mkdir.yml
+  ansible.builtin.include_tasks: roles/file_Recovery/tasks/1pre_mkdir.yml
 
 - name: "{{ ansible_os_family }}環境設定"
   ansible.builtin.include_tasks: "include/{{ ansible_os_family }}.yml"
@@ -26,7 +26,7 @@
   tags: task_user
 
 - name: ファイル回収
-  ansible.builtin.include_tasks: roles/01-file_Recovery/tasks/2post_Recovery.yml
+  ansible.builtin.include_tasks: roles/file_Recovery/tasks/2post_Recovery.yml
 
 - name: Prometheus exporter Gossる
   ansible.builtin.include_tasks:
