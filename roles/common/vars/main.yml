@@ -1,0 +1,45 @@
+---
+# vars file for common
+### ディレクトリ
+admin_home_bin_dir: "/home/{{ ansible_ssh_user }}/.bin"
+admin_home_vim_dir: "/home/{{ ansible_ssh_user }}/.vim/stmp"
+admin_home_work_dir: "/home/{{ ansible_ssh_user }}/.work.d"
+admin_home_ssh_dir: "/home/{{ ansible_ssh_user }}/.ssh"
+skel_dir: "/etc/skel"
+skel_bin_dir: "{{ skel_dir }}/.bin"
+skel_work_dir: "{{ skel_dir }}/.work.d"
+
+### SSH
+### Ansibel拡張公開鍵 (鍵ファイルのex_auth_keys変数は、group_vars/all/etc.ymlにて定義)
+ex_auth_keys_path: "/home/{{ ansible_ssh_user }}/{{ ex_auth_keys }}"
+
+skel_dir_list:
+ - { remote_dir: "{{ skel_bin_dir }}", own: root, gro: root, mod: 750 }
+ - { remote_dir: "{{ skel_work_dir }}", own: root, gro: root, mod: 750 }
+ - { remote_dir: "{{ skel_dir }}/.vim/stmp", own: root, gro: root, mod: 750 }
+
+### ファイル転送先リスト
+admin_vimrc_path: "/home/{{ ansible_ssh_user }}/.vimrc"
+skel_vimrc_path: "{{ skel_dir }}/.vimrc"
+
+### ユーザー環境変数
+mv_admin_user_files:
+ - { local_file: admin/vimrc, remote_file: "{{ admin_vimrc_path }}", mod: 640 }
+
+### rootユーザー環境変数
+mv_root_env_files:
+ - { local_file: vimrc, remote_file: /root/.vimrc, mod: 640 }
+
+### Skelディレクトリへの転送
+mv_skel_files:
+ - { local_file: vimrc, remote_file: "{{ skel_vimrc_path }}", mod: 640 }
+
+### == 変更ファイルリスト
+Recovery_files_list:
+ - "{{ skel_vimrc_path }}"
+
+### Gossテストファイル
+goss_test_dir: "/var/tmp/{{ role_name }}_gosstest"
+
+goss_test_files:
+ - { local_file: /usr/local/bin/goss, remote_file: "{{ goss_test_dir }}/goss", own: root, gro: root, mod: 755 }

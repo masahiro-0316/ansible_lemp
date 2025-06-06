@@ -1,0 +1,28 @@
+---
+###  Ansible ユーザー
+
+###  ユーザ設定ファイル転送
+
+- name: Admin ユーザホーム追加ディレクトリ作成
+  ansible.builtin.file:
+    path: "{{ item }}"
+    owner: "{{ ansible_ssh_user }}"
+    group: "{{ ansible_ssh_user }}"
+    mode: "0750"
+    state: directory
+  register: chdir_result
+  with_items:
+    - "{{ admin_home_bin_dir }}"
+    - "{{ admin_home_vim_dir }}"
+
+# - ansible.builtin.debug: var=edit_profile
+
+- name: Admine ユーザ環境ファイル転送
+  ansible.builtin.copy:
+    src: "{{ item.local_file }}"
+    dest: "{{ item.remote_file }}"
+    owner: "{{ ansible_ssh_user }}"
+    group: "{{ ansible_ssh_user }}"
+    mode: "{{ item.mod }}"
+  with_items: "{{ mv_admin_user_files }}"
+  register: cp_result

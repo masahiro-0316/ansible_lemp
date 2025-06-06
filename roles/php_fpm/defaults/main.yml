@@ -1,0 +1,5 @@
+---
+# defaults file for php_fpm
+
+php_version: 8.2
+php_ini_path: /etc/php.ini

@@ -1,0 +1,93 @@
+---
+# tasks/include/initdb file for mariadb
+
+- name: MariaDBが起動していることを確認
+  ansible.builtin.command:
+    cmd: systemctl status mariadb
+  register: service_status
+  changed_when: service_status == '(running)'
+
+# - name: db起動状態
+#    ansible.builtin.debug:
+#      var: service_status.stdout_lines
+
+- name: Rootパスワード設定
+#  when:
+#    - not ansible_check_mode
+#    - "'Active: active (running)'  in service_status.stdout"
+  block:
+    - name: データベース初期化確認
+      community.mysql.mysql_query:
+        login_user: root
+        login_password: "{{ mariadb_root_pass }}"
+        login_host: localhost
+        query:
+          - show variables like 'char%';
+          - SHOW GLOBAL VARIABLES like 'expire_logs_days';
+      register: db_show
+
+  rescue:
+    - name: MariaDB初期化ステップ１　Rootパスワード設定
+      community.mysql.mysql_user:
+        login_user: root
+        login_password: "{{ mariadb_root_pass }}"
+        login_unix_socket: "{{ db_unix_sock }}"
+        password: "{{ mariadb_root_pass }}"
+        name: root
+        check_implicit_admin: true
+        state: present
+      register: setup_db1
+
+    - name: Rootユーザ設定
+      ansible.builtin.debug:
+        var: setup_db1.msg
+
+    - name: my.conf_を転送
+      ansible.builtin.template:
+        src: my.cnf.j2
+        dest: /root/.my.cnf
+        owner: root
+        group: root
+        mode: "0600"
+      register: cp_result
+      no_log: true
+
+    - name: MariaDB初期化ステップ2　匿名ユーザ削除
+      community.mysql.mysql_user:
+        name: ''
+        host_all: true
+        state: absent
+      register: setup_db2
+
+    - name: ユーザ一一覧表示
+      ansible.builtin.debug:
+        var: setup_db2.msg
+
+    - name: MariaDB初期化ステップ3　rootユーザリモート接続削除
+      ansible.builtin.command:
+        cmd: /usr/bin/mysql -uroot -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost',  '127.0.0.1',  '::1');"
+      register: setup_db3
+      changed_when: setup_db3.rc != 0
+
+    - name: Rootユーザの接続制限確認
+      ansible.builtin.debug:
+        var: setup_db3
+
+    - name: MariaDB初期化ステップ4　testデータベース削除
+      community.mysql.mysql_db:
+        name: test
+        state: absent
+      register: setup_db4
+
+    - name: データベース状態
+      ansible.builtin.debug:
+        var: setup_db4
+
+    - name: MariaDB サービス再起動
+      ansible.builtin.systemd:
+        name: mariadb
+        state: restarted
+        enabled: true
+      register: db_server
+
+### MariaDB 初期化作業 END

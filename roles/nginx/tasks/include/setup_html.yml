@@ -1,0 +1,37 @@
+---
+# tasks/include/setup_html file for nginx
+
+### htmlファイル設定
+
+- name: nginx html デフォルトファイルの存在を確認
+  ansible.builtin.stat:
+    path: "{{ nginx_index_html }}"
+  register: check_file
+
+- name: Nginx index.html
+  when: check_file.stat.exists
+  block:
+    - name: NginxデフォルトHTMLの保存
+      ansible.builtin.copy:
+        src: "{{ nginx_index_html }}"
+        dest: "{{ linux_remote_backup_dir }}/{{ nginx_index_html | basename }}"
+        mode: "u+r"
+        force: false
+        remote_src: true
+      register: cp_result
+      when: not ansible_check_mode
+
+    - name: Nginx HTML修正
+      ansible.builtin.copy:
+        src: index.html
+        dest: "{{ nginx_index_html }}"
+        mode: "644"
+      register: cp_result
+
+- name: Nginx サービスを常駐起動
+  ansible.builtin.systemd:
+    state: started
+    name: nginx
+    enabled: true
+  register: nginx_system
+  when: not ansible_check_mode

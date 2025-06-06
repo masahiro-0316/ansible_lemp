@@ -1,0 +1,21 @@
+---
+## ディレクトリ
+work_dir: "/root/.work.d"
+ssh_dir: /root/.ssh
+
+## バックアップスクリプト
+script_name: mariadb_backup.sh
+script_conf: mariadb_backup.conf
+backup_script: "{{ work_dir }}/{{ script_name }}"
+backup_script_conf: "{{ work_dir }}/{{ script_conf }}"
+
+## ファイル転送
+mv_work_script:
+ - { local_file: "{{ script_name }}.j2", remote_file: "{{ backup_script }}", own: "root", gro: "root", mod: 700 }
+ - { local_file: "{{ script_conf }}.j2", remote_file: "{{ backup_script_conf }}", own: root, gro: root, mod: 600 }
+# - { local_file: "config.j2", remote_file: "{{ ssh_config }}", own: "root", gro: "root", mod: 600 }
+
+### 変更ファイルリスト
+Recovery_files_list:
+ - "{{ backup_script }}"
+ - "{{ backup_script_conf }}"

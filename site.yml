@@ -1,0 +1,4 @@
+--- ### 基本サーバ構築
+- import_playbook: 1st_setup.yml
+- import_playbook: update_system.yml
+- import_playbook: 4th_lemp.yml

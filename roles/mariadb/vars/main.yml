@@ -1,0 +1,13 @@
+---
+# vars file for mariadb
+### 回収ファイルリスト
+Recovery_files_list:
+ - "{{ server_cnf }}"
+ - "{{ client_cnf }}"
+ - "{{ mariadb_syslog_cnf }}"
+
+goss_test_dir: "/var/tmp/{{ role_name }}_gosstest"
+
+goss_test_files:
+ - { local_file: /usr/local/bin/goss, remote_file: "{{ goss_test_dir }}/goss", own: root, gro: root, mod: 755 }
+ - { local_file: "{{ os_version }}/goss.yml", remote_file: "{{ goss_test_dir }}/goss.yaml", own: root, gro: root, mod: 644 }

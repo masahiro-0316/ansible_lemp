@@ -1,0 +1,38 @@
+--- ### roles/repo_cli/vars/main.yml
+### local repo mirrer URL list
+local_repo_url: "http://{{ swcSrv }}.{{ bg_domain }}/{{ ansible_distribution | lower }}/$releasever/$basearch"
+
+### CnetOS7 Base
+local_base_url: "{{ local_repo_url }}/os/base/"
+local_base_updates_url: "{{ local_repo_url }}/os/updates/"
+local_base_extras_yum_url: "{{ local_repo_url }}/os/extras/"
+### CnetOS7 専用拡張
+local_scl_url: "{{ local_repo_url }}/centos-sclo-sclo/"
+local_scl_rh_url: "{{ local_repo_url }}/centos-sclo-rh/"
+
+### RHEL7用拡張
+scl_org_yum_url: "http://mirrorlist.centos.org?arch=$basearch&release=7&repo=sclo-sclo"
+scl_rh_org_yum_url: "http://mirrorlist.centos.org?arch=$basearch&release=7&repo=sclo-rh"
+
+### RHEL8-9 Base
+local_baseos_url: "{{ local_repo_url }}/os/baseos/"
+local_appstream_url: "{{ local_repo_url }}/os/appstream/"
+local_crb_url: "{{ local_repo_url }}/os/crb/"
+local_extras_url: "{{ local_repo_url }}/os/extras/"
+local_devel_url: "{{ local_repo_url }}/os/devel/"
+local_plus_url: "{{ local_repo_url }}/os/plus/"
+
+### RHEL系拡張
+local_epel_url: "{{ local_repo_url }}/epel/"
+local_elrepo_url: "{{ local_repo_url }}/elrepo/"
+local_epel_next_url: "{{ local_repo_url }}/epel/"
+
+### エラー回避用変数
+sclo_repo_path: /etc/yum.repos.d/CentOS-SCLo-scl.repo
+sclo_rh_repo_path: /etc/yum.repos.d/CentOS-SCLo-scl-rh.repo
+appstream_repo_path: /etc/yum.repos.d/CentOS-Stream-AppStream.repo
+elrepo_repo_path: /etc/yum.repos.d/elrepo.repo
+epel_next_repo_path: /etc/yum.repos.d/epel-next.repo
+crb_repo_path: /etc/yum.repos.d/rocky.repo
+plus_repo_path: /etc/yum.repos.d/rocky-extras.repo
+devel_repo_path: /etc/yum.repos.d/rocky-devel.repo

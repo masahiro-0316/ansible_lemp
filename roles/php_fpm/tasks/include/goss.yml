@@ -1,0 +1,76 @@
+---
+# tasks/include/goss file for php_fpm
+
+- name: Gossテスト用変数の定義
+  ansible.builtin.set_fact:
+    goss_report: "~/tmp/goss/{{ role_name }}.txt"
+
+- name: gossテスト作業ディレクトリ作成
+  ansible.builtin.file:
+    path: "{{ goss_test_dir }}"
+    owner: "{{ ansible_ssh_user }}"
+    group: "{{ ansible_ssh_user }}"
+    mode: "0750"
+    state: directory
+  register: mk_dir
+  changed_when: false
+
+- name: gossテスト準備
+  ansible.builtin.copy:
+    src: "{{ item.local_file }}"
+    dest: "{{ item.remote_file }}"
+    owner: "{{ item.own }}"
+    group: "{{ item.gro }}"
+    mode: "{{ item.mod }}"
+  with_items: "{{ goss_test_files }}"
+  register: cp_result
+
+- name: gossテスト準備2
+  ansible.builtin.template:
+    src: "goss.yml.j2"
+    dest: "{{ goss_test_dir }}/goss.yaml"
+    mode: u+r
+  register: cp_result
+
+- name: goss テスト
+  when: not ansible_check_mode
+  block:
+    - name: goss インフラテスト
+      ansible.builtin.shell:
+        chdir: "{{ goss_test_dir }}"
+        cmd: |
+          set -o pipefail && ./goss -g goss.yaml v -f tap |
+          tee goss_{{ role_name }}.txt
+      register: goss_ru
+      changed_when: goss_ru.rc != 0
+
+    - name: テスト結果
+      ansible.builtin.debug:
+        var: goss_ru.stdout_lines
+
+    - name: テスト結果レポート回収
+      ansible.builtin.fetch:
+        src: "{{ goss_test_dir }}/goss_{{ role_name }}.txt"
+        dest: "{{ goss_report }}"
+        flat: true
+      register: mod_files
+
+  rescue:
+    - name: テスト結果レポート回収
+      ansible.builtin.fetch:
+        src: "{{ goss_test_dir }}/goss_{{ role_name }}.txt"
+        dest: "{{ goss_report }}"
+        flat: true
+      register: mod_files
+      when: not ansible_check_mode
+
+    - name: テストに失敗
+      ansible.builtin.fail:
+        msg: "レポートを確認{{ goss_report }}"
+
+- name: gossテスト作業ディレクトリ削除
+  ansible.builtin.file:
+    path: "{{ goss_test_dir }}"
+    state: absent
+  register: rm_dir
+  changed_when: false

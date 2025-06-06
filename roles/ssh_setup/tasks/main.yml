@@ -1,0 +1,25 @@
+---
+# tasks file for ssh_setup
+### = 事前タスク
+- name: setup OS varibleds
+  ansible.builtin.include_vars: "{{ item }}"
+  with_first_found:
+    - "vars/{{ os_version }}.yml"
+    - "vars/{{ ansible_os_family }}.yml"
+
+- name: 作業用ディレクトリの作成
+  ansible.builtin.include_tasks: roles/01-file_Recovery/tasks/1pre_mkdir.yml
+### == 事前タスク END
+
+### == SSH設定
+
+- name: SSHデーモン、クライアント設定
+  ansible.builtin.include_tasks: include/ssh.yml
+  tags: task_ssh
+
+### == SSH設定 END
+
+### == 事後タスク
+- name: ファイルを回収
+  ansible.builtin.include_tasks: roles/01-file_Recovery/tasks/2post_Recovery.yml
+### == 事後タスク END

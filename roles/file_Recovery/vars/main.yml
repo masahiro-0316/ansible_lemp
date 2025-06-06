@@ -1,0 +1,8 @@
+---
+# vars file for file_Recovery
+#ファイル回収用変数 
+#ここには何も書かないファイルを回収したいサーバーのAnsibleホスト名の変数ファイルを作成し
+#　そこに人用事項を記入する
+#　記入例は配下
+#Recovery_files_list: # この変数は必須でこれ以降に書かれたリストが順次回収されていく
+#  - /path/to/recovery_file

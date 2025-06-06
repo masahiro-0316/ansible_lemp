@@ -1,0 +1,10 @@
+---
+### == 作業対象ファイル
+sshd_conf_path: /etc/ssh/sshd_config
+ssh_firewall_path: /etc/firewalld/services/ssh.xml
+
+service_name: ssh
+
+### == ファイル転送用
+mv_ssh_firewall_conf:
+ - { local_file: "{{ os_version }}/ssh.xml.j2", remote_file: "{{ ssh_firewall_path }}", own: root, gro: root, mod: 644 }

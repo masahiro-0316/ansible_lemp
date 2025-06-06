@@ -1,0 +1,40 @@
+---
+# tasks file for adminer
+
+- name: Adminerのローカルダウンロードディレクトリ作成
+  delegate_to: localhost
+  become: false
+  ansible.builtin.file:
+    path: /tmp/adminer/
+    state: directory
+    mode: "0755"
+
+- name: Adminer をダウンロード
+  ansible.builtin.get_url:
+    url: "{{ adminer_github_url }}"
+    dest: "/tmp/adminer/adminer.php"
+    mode: '0644'
+    # 公式配布ファイルのハッシュを確認したら下行のコメントを外し、値を置き換えてください
+    # checksum: "sha256:{{ adminer_sha256 }}"
+    validate_certs: true
+  register: adminer_download
+  become: false
+  delegate_to: localhost
+
+- name: ダウンロード結果を出力
+  ansible.builtin.debug:
+    msg: "Adminer {{ adminer_download.dest }} has been {{ 'updated' if adminer_download.changed else 'left unchanged' }}"
+
+- name: Adminerの配備先ディレクトリを作成
+  ansible.builtin.file:
+    path: "{{ web_html_dir }}/adminer"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Adminer のPHPファイルを配備 # noqa: no-handler
+  ansible.builtin.copy:
+    src: "/tmp/adminer/adminer.php"
+    dest: "{{ web_html_dir }}/adminer/index.php"
+    mode: "0644"

@@ -1,0 +1,4 @@
+---
+# defaults file for mariadb
+new_db_dir: /var/lib/mysql
+mariadb_Ver: "10.3"

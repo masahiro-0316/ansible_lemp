@@ -1,0 +1,4 @@
+---
+# vats/RedHat file for php_fpm
+
+php_rpm: "@php:{{ php_version }}"

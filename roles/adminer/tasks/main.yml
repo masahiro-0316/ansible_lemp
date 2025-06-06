@@ -1,0 +1,21 @@
+---
+# tasks file for adminer
+
+- name: DB接続パッケージ
+  ansible.builtin.include_tasks:
+    file: "include/{{ os_version }}.yml"
+
+- name: PostgreSQL PG_VERSIONファイルの有無を確認
+  ansible.builtin.stat:
+    path: "{{ pgsql_dir }}/{{ pgsql_version }}/data/PG_VERSION"
+  register: pg_version_file
+
+- name: PostgreSQL接続設定
+  ansible.builtin.include_tasks:
+    file: "include/pgsql.yml"
+  when: pg_version_file.stat.exists
+
+- name: Adminer設定
+  ansible.builtin.include_tasks:
+    file: include/adminer.yml
+  tags: adminer

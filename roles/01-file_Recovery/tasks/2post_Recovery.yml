@@ -1,0 +1,119 @@
+---
+### == ファイルを回収
+
+- name: 変更後のファイルの回収BLOCK
+  block:
+    - name: 変更後のファイル回収ディレクトリ作成
+      ansible.builtin.file:
+        path: "{{ item }}"
+        owner: "{{ ansible_ssh_user }}"
+        group: "{{ ansible_ssh_user }}"
+        state: directory
+        recurse: true
+      register: bakup_dir
+      changed_when: false
+      with_items: "{{ linux_remote_modfile_dir }}"
+
+    # - debug: var=backup_dir
+
+    - name: 変更したファイルを収集
+      ansible.builtin.copy:
+        src: "{{ item }}"
+        dest: "{{ linux_remote_modfile_dir }}/{{ item | basename }}"
+        remote_src: true
+        owner: "{{ ansible_ssh_user }}"
+        group: "{{ ansible_ssh_user }}"
+        mode: "u+r"
+      register: mod_files
+      changed_when: false
+      with_items: "{{ Recovery_files_list }}"
+      when: not ansible_check_mode
+
+#     - debug: var=mod_files
+
+  rescue:
+    - name: "例外発生：変更ファイルの収集"
+      ansible.builtin.debug:
+        msg: "一部もしくは、全部で収集対象が存在しなかった"
+
+- name: 原本ファイルの回収BLOCK
+  block:
+    - name: 回収した原本ファイルを確認
+      ansible.builtin.find:
+        paths: "{{ linux_remote_backup_dir }}"
+      register: org_file_list
+
+#    - debug: var=org_file_list.files
+
+    - name: 原本ファイルの回収
+      ansible.builtin.fetch:
+        src: "{{ item.path }}"
+        dest: "{{ local_backup_dir }}/"
+        flat: true
+      with_items: "{{ org_file_list.files }}"
+      register: org_files
+      when: not ansible_check_mode
+
+  rescue:
+    - name: "例外発生：原本ファイルが存在しない"
+      ansible.builtin.debug:
+        msg: "一部もしくは、全部で回収対象が存在しなかった"
+
+- name: 変更ファイルの回収BLOCK
+  block:
+    - name: 回収した変更ファイルを確認
+      ansible.builtin.find:
+        paths: "{{ linux_remote_modfile_dir }}"
+      register: mod_file_list
+
+#    - debug: var=mod_file_list.files
+
+    - name: 変更ファイルの回収
+      ansible.builtin.fetch:
+        src: "{{ item.path }}"
+        dest: "{{ local_modfile_dir }}/"
+        flat: true
+      with_items: "{{ mod_file_list.files }}"
+      register: mod_files
+      when: not ansible_check_mode
+
+  rescue:
+    - name: "例外発生：回収ファイルが存在しない"
+      ansible.builtin.debug:
+        msg: "一部もしくは、全部で回収対象が存在しなかった"
+
+# - name: ディレクトリごとの回収BLOCK
+#   block:
+#     - name: ディレクトリを回収
+#       ansible.posix.synchronize:
+#         mode: pull
+#         src: "{{ linux_remote_modfile_dir }}"
+#         dest: "{{ local_modfile_dir_sync }}"
+#         dest_port: "{{ ansible_ssh_port }}"
+#         private_key: "{{ ansible_ssh_private_key_file }}"
+#         recursive: true
+#         rsync_timeout: 20
+#       register: mod_sync
+#       changed_when: mod_sync.rc != 0
+#       become: false
+#       when: not ansible_check_mode
+#
+#     - name: ディレクトリ回収結果
+#       ansible.builtin.debug:
+#         var: mod_sync.stdout_lines
+#
+#   rescue:
+#     - name: "例外発生：回収ディレクトリが存在しない"
+#       ansible.builtin.debug:
+#         msg: "一部もしくは、全部で回収対象が存在しなかった"
+
+- name: 変更ファイル格納ディレクトリ削除
+  ansible.builtin.file:
+    path: "{{ linux_remote_modfile_dir }}"
+    state: absent
+  changed_when: false
+  register: rm_recovery_result
+
+# - debug: var=rm_recovery_result
+
+#### == ファイルを回収 END

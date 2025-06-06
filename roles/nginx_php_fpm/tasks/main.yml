@@ -1,0 +1,27 @@
+---
+# tasks file for nginx_php_fpm
+
+### 事前タスク
+- name: フォルダ回収先の作成
+  ansible.builtin.include_tasks:
+    file: roles/01-file_Recovery/tasks/1pre_mkdir.yml
+### 事前タスク END
+
+### php-fpmの設定
+
+- name: php-fpm nginx 利用
+  ansible.builtin.include_tasks:
+    file: include/php_fpm_nginx.yml
+  tags: task_initphp
+
+###  phpインストールテスト
+- name: php Gossる
+  ansible.builtin.include_tasks:
+    file: include/goss.yml
+  tags: task_goss
+
+### 事後タスク
+- name: ファイル回収タスク
+  ansible.builtin.include_tasks:
+    file: roles/01-file_Recovery/tasks/2post_Recovery.yml
+### 事後タスク END

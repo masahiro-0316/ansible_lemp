@@ -1,0 +1,40 @@
+---
+# defaults file for self_certificate_authority
+common_name: "{{ ansible_hostname }}"
+# 国・組織情報
+country_name: JP
+state_or_province_name: Tokyo
+locality_name: Tokyo
+organization_name: ExampleOrg
+organizational_unit_name: IT
+
+# CA 用パラメータ
+ca_common_name: "{{ common_name }}-CA"
+ca_key_size: 4096
+ca_key_type: RSA
+ca_validity_days: 3650
+ca_subject_alt_name: ["DNS:ca.{{ ansible_domain }}"]   # 必要に応じて ["DNS:ca.example.com"] など
+
+# サーバー証明書用パラメータ
+key_size: 2048
+key_type: RSA
+server_validity_days: 825
+server_subject_alt_name:  # 必要に応じて ["DNS:{{ common_name }}", "IP:1.2.3.4"] など
+  - "{{ common_name }}.{{ ansible_domain }}"
+
+# local証明書設置先
+local_cer_dir: "{{ playbook_dir }}/config_backup/{{ inventory_hostname_short }}_cer.d"
+
+# remote証明書設置先
+tls_dir: /etc/pki/tls
+tls_private_key_dir: "{{ tls_dir }}/private"
+tls_certificate_dir: "{{ tls_dir }}/certs"
+tls_dir_list:
+  - "{{ tls_dir }}"
+  - "{{ tls_private_key_dir }}"
+  - "{{ tls_certificate_dir }}"
+
+# サーバー証明書ファイル名
+tls_prv_key: "{{ common_name }}.key"
+tls_prv_crt: "{{ common_name }}.crt"
+dhparam_file: "{{ tls_dir }}/dhparam.pem"

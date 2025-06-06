@@ -1,0 +1,181 @@
+---
+# tasks file for self_certificate_authority
+# 1) CA のキーペアと証明書を生成 (コントローラー上で一度だけ)
+- name: CA 用ディレクトリ作成
+  become: false
+  ansible.builtin.file:
+    path: "{{ local_cer_dir }}"
+    state: directory
+    mode: '0750'
+  delegate_to: localhost
+  run_once: true
+
+- name: CA 局の設定
+  become: false
+  block:
+    - name: CA プライベートキーを生成
+      community.crypto.openssl_privatekey:
+        path: "{{ local_cer_dir }}/ca.key"
+        size: "{{ ca_key_size }}"
+        type: "{{ ca_key_type }}"
+        mode: '0400'
+        force: false
+      delegate_to: localhost
+      register: ca_key_info
+      run_once: true
+      # docs: community.crypto.openssl_privatekey
+
+    # 2) CA CSR を生成 (Subject 情報はここで指定)
+    - name: Create CA CSR
+      community.crypto.openssl_csr:
+        path: "{{ local_cer_dir }}/ca.csr"
+        privatekey_path: "{{ local_cer_dir }}/ca.key"
+        common_name: "{{ ca_common_name }}"
+        country_name: "{{ country_name }}"
+        state_or_province_name: "{{ state_or_province_name }}"
+        locality_name: "{{ locality_name }}"
+        organization_name: "{{ organization_name }}"
+        organizational_unit_name: "{{ organizational_unit_name }}"
+        subject_alt_name: "{{ ca_subject_alt_name }}"
+      delegate_to: localhost
+      register: ca_csr_info
+      run_once: true
+      # docs: community.crypto.openssl_csr
+
+    # 3) CSR を自己署名して CA 証明書を生成
+    - name: Generate CA self-signed certificate
+      community.crypto.x509_certificate:
+        path: "{{ local_cer_dir }}/ca.crt"
+        privatekey_path: "{{ local_cer_dir }}/ca.key"
+        csr_path: "{{ local_cer_dir }}/ca.csr"
+        provider: selfsigned
+        # 有効期間 (デフォルトは約10年、必要に応じて調整可)
+        selfsigned_not_after: "+{{ ca_validity_days }}d"
+        mode: '0444'
+      delegate_to: localhost
+      register: ca_cert_info
+      run_once: true
+      # docs: community.crypto.x509_certificate
+
+    - name: CA 証明書の確認
+      community.crypto.x509_certificate_info:
+        path: "{{ local_cer_dir }}/ca.crt"
+      register: ca_cert_info
+      delegate_to: localhost
+      run_once: true
+      # docs: community.crypto.x509_certificate_info
+
+    - ansible.builtin.debug:
+        msg: "{{ item }}"
+      loop:
+        - "CA の Common Name: {{ ca_cert_info.subject.commonName }}"
+        - "CA の country Name: {{ ca_cert_info.subject.countryName }}"
+        - "CA の locality Name: {{ ca_cert_info.subject.localityName }}"
+        - "CA の organization Name: {{ ca_cert_info.subject.organizationName }}"
+        - "CA の organizational Unit Name: {{ ca_cert_info.subject.organizationalUnitName }}"
+        - "CA の Subject Alternative Name: {{ ca_cert_info.subject_alt_name }}"
+        - "CA 有効日:{{ ca_cert_info.not_before }}"
+        - "CA 有効期限日:{{ ca_cert_info.not_after }}"
+        - "CA 鍵の型: {{ ca_cert_info.public_key_type }}"
+        - "CA 鍵の鍵長: {{ ca_cert_info.public_key_data.size }}"
+      # ignore_errors: true
+
+# 2) 各ホスト用サーバーキーと CSR 作成
+- name: サーバー証明書作成
+  become: false
+  block:
+    - name: サーバー用プライベートキーを生成
+      community.crypto.openssl_privatekey:
+        path: "{{ local_cer_dir }}/{{ common_name }}.key"
+        size: "{{ key_size }}"
+        type: "{{ key_type }}"
+        mode: '0400'
+        force: false
+      delegate_to: localhost
+      run_once: true
+
+    - name: サーバー用 CSR を生成
+      community.crypto.openssl_csr:
+        path: "{{ local_cer_dir }}/{{ common_name }}.csr"
+        privatekey_path: "{{ local_cer_dir }}/{{ common_name }}.key"
+        common_name: "{{ common_name }}"
+        country_name: "{{ country_name }}"
+        state_or_province_name: "{{ state_or_province_name }}"
+        locality_name: "{{ locality_name }}"
+        organization_name: "{{ organization_name }}"
+        organizational_unit_name: "{{ organizational_unit_name }}"
+        subject_alt_name: "{{ item.value | map('regex_replace', '^', 'DNS:') | list }}"
+      with_dict:
+        dns_server: "{{ server_subject_alt_name }}"
+      delegate_to: localhost
+      run_once: true
+
+    # 3) CSR を CA で署名してサーバー証明書を作成
+    - name: サーバー証明書を CA 署名で生成
+      community.crypto.x509_certificate:
+        path: "{{ local_cer_dir }}/{{ common_name }}.crt"
+        csr_path: "{{ local_cer_dir }}/{{ common_name }}.csr"
+        provider: ownca
+        ownca_path: "{{ local_cer_dir }}/ca.crt"
+        ownca_privatekey_path: "{{ local_cer_dir }}/ca.key"
+        selfsigned_not_after: "+{{ server_validity_days }}d"
+        mode: '0444'
+      delegate_to: localhost
+      run_once: true
+
+    - name: "{{ common_name }}サーバー証明書の確認"
+      community.crypto.x509_certificate_info:
+        path: "{{ local_cer_dir }}/{{ common_name }}.crt"
+      register: srv_cert_info
+      delegate_to: localhost
+      run_once: true
+      # docs: community.crypto.x509_certificate_info
+
+    - ansible.builtin.debug:
+        msg: "{{ item }}"
+      loop:
+        - "{{ common_name }} の Common Name: {{ srv_cert_info.subject.commonName }}"
+        - "{{ common_name }} の country Name: {{ srv_cert_info.subject.countryName }}"
+        - "{{ common_name }} の locality Name: {{ srv_cert_info.subject.localityName }}"
+        - "{{ common_name }} の organization Name: {{ srv_cert_info.subject.organizationName }}"
+        - "{{ common_name }} の organizational Unit Name: {{ srv_cert_info.subject.organizationalUnitName }}"
+        - "{{ common_name }} の Subject Alternative Name: {{ srv_cert_info.subject_alt_name }}"
+        - "{{ common_name }} 有効日:{{ srv_cert_info.not_before }}"
+        - "{{ common_name }} 有効期限日:{{ srv_cert_info.not_after }}"
+        - "{{ common_name }} 鍵の型: {{ srv_cert_info.public_key_type }}"
+        - "{{ common_name }} 鍵の鍵長: {{ srv_cert_info.public_key_data.size }}"
+      # ignore_errors: true
+
+# 4) リモートにディレクトリを準備して証明書配布
+- name: リモート TLS ディレクトリを作成
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0750'
+  loop: "{{ tls_dir_list }}"
+
+- name: CA 証明書を配布
+  ansible.builtin.copy:
+    src: "{{ local_cer_dir }}/ca.crt"
+    dest: "{{ tls_certificate_dir }}/ca.crt"
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: サーバー証明書とキーを配布
+  ansible.builtin.copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: root
+    mode: "{{ item.mode }}"
+  loop:
+    - { src: "{{ local_cer_dir }}/{{ common_name }}.key", dest: "{{ tls_private_key_dir }}/{{ tls_prv_key }}", mode: '0600' }
+    - { src: "{{ local_cer_dir }}/{{ common_name }}.crt", dest: "{{ tls_certificate_dir }}/{{ tls_prv_crt }}", mode: '0644' }
+
+- name: dhparam を生成
+  community.crypto.openssl_dhparam:
+    path: "{{ dhparam_file }}"
+    size: 2048

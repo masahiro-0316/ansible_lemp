@@ -1,0 +1,40 @@
+---
+# tasks/include/setup_cpnf file for mariadb
+
+- name: MariaDB 設定ファイル編集
+  block:
+    - name: MariaDB server元ファイルをバックアップ
+      ansible.builtin.copy:
+        src: "{{ item.remote_file }}"
+        dest: "{{ linux_remote_backup_dir }}/{{ item.remote_file | basename }}"
+        mode: u+r
+        force: false
+        remote_src: true
+      with_items: "{{ mv_db_conf }}"
+      register: cp_result
+      when: not ansible_check_mode
+
+  #  - ansible.builtin.debug: var=cp_result
+
+    - name: MariaDB設定ファイル転送
+      ansible.builtin.template:
+        src: "{{ item.local_file }}"
+        dest: "{{ item.remote_file }}"
+        owner: "{{ item.own }}"
+        group: "{{ item.gro }}"
+        mode: "{{ item.mod }}"
+      with_items: "{{ mv_db_conf }}"
+      register: cp_result
+
+#  - ansible.builtin.debug: var=cp_result
+
+### MariaDBサービス起動
+
+- name: MariaDB サービス起動
+  ansible.builtin.systemd:
+    name: mariadb
+    state: started
+    enabled: true
+  register: db_server
+
+# - ansible.builtin.debug: var=db_server

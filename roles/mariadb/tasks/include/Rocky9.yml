@@ -1,0 +1,12 @@
+---
+# tasks/include/RedHat8 file for mariadb
+
+- name: MariaDBインストール
+  ansible.builtin.dnf:
+    name: "{{ mariadb_pack }}"
+    state: present
+  register: mariadb_yum
+
+- name: MariaDBインストール結果
+  ansible.builtin.debug:
+    var: mariadb_yum.results

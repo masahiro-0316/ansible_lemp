@@ -1,0 +1,34 @@
+package:
+    mariadb-server:
+        installed: true
+    mariadb-server-utils:
+        installed: true
+    python3-PyMySQL:
+        installed: true
+service:
+  mariadb:
+    enabled: true
+    running: true
+command:
+  sudo mysql -e "SHOW GLOBAL VARIABLES like 'expire_logs_days';":
+    exit-status: 0
+    stdout:
+    - "expire_logs_days\t31"
+  sudo mysql -e "show variables like 'char%';":
+    exit-status: 0
+    stdout:
+    - utf8mb4
+    - character_set_server
+    - character_set_client
+  sudo mysql -e "select user,host from mysql.user;":
+    exit-status: 0
+    stdout:
+     - "mariadb.sys\tlocalhost"
+     - "mysql\tlocalhost"
+     - "root\tlocalhost"
+  sudo mysql -e "show databases;":
+    exit-status: 0
+    stdout:
+    - information_schema
+    - mysql
+    - performance_schema

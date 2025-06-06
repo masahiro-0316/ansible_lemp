@@ -1,0 +1,40 @@
+---
+# tasks file for php_fpm
+
+### 事前タスク
+- name: setup OS varibleds
+  ansible.builtin.include_vars:
+    file: "{{ item }}"
+  with_first_found:
+    - "vars/{{ os_version }}.yml"
+    - "vars/{{ ansible_os_family }}.yml"
+
+- name: フォルダ回収先の作成
+  ansible.builtin.include_tasks:
+    file: roles/01-file_Recovery/tasks/1pre_mkdir.yml
+### 事前タスク END
+
+### php-fpm インストール
+- name: php-fpmインストール
+  ansible.builtin.include_tasks:
+    file: "include/{{ os_version }}.yml"
+  tags: task_install
+
+### php-fpmの設定
+
+- name: phpの基本設定
+  ansible.builtin.include_tasks:
+    file: include/init_php.yml
+  tags: task_initphp
+
+###  phpインストールテスト
+- name: php Gossる
+  ansible.builtin.include_tasks:
+    file: include/goss.yml
+  tags: task_goss
+
+### 事後タスク
+- name: ファイル回収タスク
+  ansible.builtin.include_tasks:
+    file: roles/01-file_Recovery/tasks/2post_Recovery.yml
+### 事後タスク END

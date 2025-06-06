@@ -1,0 +1,7 @@
+skip_list:
+  - var-naming
+  - name
+  - role-name
+exclude_paths:
+  - ./*/update_system.yml
+  - ./*/development.yml

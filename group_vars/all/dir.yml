@@ -1,0 +1,15 @@
+---
+### remote target dir
+linux_backup_dir: "/home/{{ ansible_ssh_user }}/backup.d"
+linux_remote_backup_dir: "{{ linux_backup_dir }}/{{ role_name }}"
+linux_remote_modfile_dir: "/var/tmp/{{ role_name }}"
+linux_work_dir: "{{ linux_remote_modfile_dir }}"
+root_work_dir: /root/.work.d
+
+### local target dir
+local_backup_org: "{{ playbook_dir }}/config_backup/{{ ansible_distribution }}{{ ansible_distribution_version }}"
+local_backup_dir: "{{ local_backup_org }}_org.d/{{ inventory_hostname_short }}/{{ role_name }}"
+
+local_backup_mod: "{{ playbook_dir }}/config_backup/{{ inventory_hostname_short }}"
+local_modfile_dir: "{{ local_backup_mod }}_mod.d/{{ role_name }}"
+local_modfile_dir_sync: "{{ local_backup_mod }}_mod.d/"

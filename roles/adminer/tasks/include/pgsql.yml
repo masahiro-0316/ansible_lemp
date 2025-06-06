@@ -1,0 +1,40 @@
+---
+# 3) postgresql.conf listen_addresses 編集
+- name: Listen on all interfaces
+  ansible.builtin.lineinfile:
+    path: "{{ pgsql_dir }}/{{ pgsql_version }}/data/postgresql.conf"
+    regexp: '^#?listen_addresses'
+    line: "listen_addresses = 'localhost'"
+  notify: Restart PostgreSQL
+
+# 4) pg_hba.conf に接続許可を追加
+- name: Allow {{ db_user }} from {{ cidr_allow }}
+  ansible.builtin.blockinfile:
+    path: "{{ pgsql_dir }}/{{ pgsql_version }}/data/pg_hba.conf"
+    insertafter: EOF
+    block: |
+      # Ansible managed rule for Adminer access
+      host {{ db_name }} {{ db_user }} {{ cidr_allow }} scram-sha-256
+  notify: Restart PostgreSQL
+
+# 6) DB ユーザー／DB 作成
+- name: Create application database user
+  community.postgresql.postgresql_user:
+    name: "{{ db_user }}"
+    password: "{{ db_passwd }}"
+    state: present
+  become: true
+  become_user: postgres
+
+- name: Create application database
+  community.postgresql.postgresql_db:
+    name: "{{ db_name }}"
+    owner: "{{ db_user }}"
+    state: present
+  become: true
+  become_user: postgres
+
+- name: postgresqlサービスを再起動
+  ansible.builtin.systemd:
+    name: "postgresql-{{ pgsql_version }}.service"
+    state: restarted

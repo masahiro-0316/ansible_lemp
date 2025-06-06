@@ -1,0 +1,58 @@
+---
+###  ユーザ設定ファイル転送
+
+- name: Rootホーム追加ディレクトリ作成
+  ansible.builtin.file:
+    path: "{{ item }}"
+    mode: "u+wrx"
+    state: directory
+  register: chdir_result
+  with_items:
+    - /root/.bin
+    - /root/.vim/stmp
+
+- name: 環境変数格納ディレクトリの確認
+  ansible.builtin.stat:
+    path: /root/.bin
+  register: check2_dir
+# - ansible.builtin.debug: var=check2_dir.stat.exists
+
+- name: Rootユーザ環境ファイル転送
+  ansible.builtin.copy:
+    src: "{{ item.local_file }}"
+    dest: "{{ item.remote_file }}"
+    owner: 'root'
+    group: 'root'
+    mode: "{{ item.mod }}"
+  with_items: "{{ mv_root_env_files }}"
+  when: check2_dir.stat.exists
+
+###  サーバー全体のホームディレクトリ初期設定ファイルの変更
+
+- name: Skelディレクトリ追加設定
+  ansible.builtin.file:
+    path: "{{ item.remote_dir }}"
+    owner: 'root'
+    group: 'root'
+    mode: "{{ item.mod }}"
+    state: directory
+  with_items: "{{ skel_dir_list }}"
+  register: mkdir_result
+
+- name: Skelディレクトリの確認
+  ansible.builtin.stat:
+    path: "{{ skel_bin_dir }}"
+  register: check2_dir
+
+- name: 環境ファイル転送(Skel)
+  ansible.builtin.copy:
+    src: "{{ item.local_file }}"
+    dest: "{{ item.remote_file }}"
+    owner: 'root'
+    group: 'root'
+    mode: "{{ item.mod }}"
+  with_items: "{{ mv_skel_files }}"
+  register: cp_result
+  when: check2_dir.stat.exists
+
+###  サーバー全体のホームディレクトリ初期設定ファイルの変更

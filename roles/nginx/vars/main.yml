@@ -1,0 +1,20 @@
+---
+# vars file for nginx
+
+nginx_conf_path: /etc/nginx/nginx.conf
+
+### Nginx設定ファイル転送
+nginx_conf_files:
+ - { local_file: nginx.conf.j2, remote_file: "{{ nginx_conf_path }}", own: root, gro: root, mod: 644 }
+
+### 回収ファイルリスト
+Recovery_files_list:
+ - "{{ nginx_index_html }}"
+ - "{{ nginx_conf_path }}"
+
+### Gossテストファイル
+goss_test_dir: "/var/tmp/{{ role_name }}_gosstest"
+
+goss_test_files:
+ - { local_file: /usr/local/bin/goss, remote_file: "{{ goss_test_dir }}/goss", own: root, gro: root, mod: 755 }
+ - { local_file: goss.yml, remote_file: "{{ goss_test_dir }}/goss.yaml", own: root, gro: root, mod: 644 }

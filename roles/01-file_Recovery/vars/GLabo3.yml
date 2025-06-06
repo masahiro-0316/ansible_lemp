@@ -1,0 +1,11 @@
+--- #BIND回収
+
+Recovery_files_list:
+  - /home/daath/backup.d/named.conf
+  - /home/daath/backup.d/named.conf.edit
+  - /var/named/196.168.192.db
+  - /var/named/33.168.192.db
+  - /var/named/path.sefira.arcana.int
+  - /var/named/ptolemy.sefira.arcana.ext
+
+

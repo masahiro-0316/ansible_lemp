@@ -1,0 +1,82 @@
+---
+### 自環境に必要なパッケージの導入
+
+- name: Redhat系不足パッケージを追加
+  ansible.builtin.dnf:
+    name: "{{ redhat_pack }}"
+    state: present
+  register: add_pack
+
+- name: 不足パッケージのインストール結果
+  ansible.builtin.debug:
+    var: add_pack.results
+
+###  SELinuxエラー対応の為の設定
+- name: selinux troubleshoot setup
+  when:
+    - not ansible_check_mode
+    - ansible_distribution_major_version == '7'
+  block:
+    - name: SELinux設定ファイル転送
+      ansible.builtin.copy:
+        src: "{{ item.local_file }}"
+        dest: "{{ item.remote_file }}"
+        owner: "{{ item.own }}"
+        group: "{{ item.gro }}"
+        mode: "{{ item.mod }}"
+      with_items: "{{ mv_selinux_conf }}"
+      register: cp_result
+
+#    - ansible.builtin.debug: var=cp_result
+
+    - name: setroubleshootディレクトリ権限変更
+      ansible.builtin.file:
+        path: "{{ item.remote_dir }}"
+        owner: "{{ item.own }}"
+        group: "{{ item.gro }}"
+        mode: "{{ item.mod }}"
+        state: directory
+      with_items: "{{ ch_selinux_dir }}"
+      register: chdir_result
+
+#  - ansible.builtin.debug: var=chdir_result
+
+###  Fedoraプロジェクト　EPELパッケージインストール
+
+- name: CentOS EPEL
+  when: ansible_distribution == 'CentOS'
+  block:
+    - name: RHEL8のGPG鍵更新
+      ansible.builtin.rpm_key:
+        state: present
+        key: https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-8
+
+      when:
+        - not ansible_check_mode
+        - ansible_distribution_major_version == '8'
+
+    - name: CentOS EPELパッケージインストール
+      ansible.builtin.package:
+        name: "{{ epel_packa }}"
+        state: present
+      register: epel_result
+
+- name: Rocky EPELパッケージインストール
+  ansible.builtin.package:
+    name: "{{ epel_packa }}"
+    state: present
+  register: epel_result
+  when: ansible_distribution == 'Rocky'
+
+- name: RHEL EPELパッケージインストール
+  ansible.builtin.package:
+    name: "{{ rhel_epel_packa }}"
+    state: present
+  register: epel_result
+  when: ansible_distribution == 'RedHat'
+
+- name: show epel installed
+  ansible.builtin.debug:
+    var: epel_result.results
+
+###  Fedoraプロジェクト　EPELパッケージインストール END

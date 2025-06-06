@@ -1,0 +1,32 @@
+---
+# vars file for nginx_php_fpm
+
+php_session_dir: /var/lib/php/session
+php_opcache_dir: /var/lib/php/opcache
+php_wsdlcache_dir: /var/lib/php/wsdlcache
+
+lib_php_dir_list:
+ - "{{ php_session_dir }}"
+ - "{{ php_opcache_dir }}"
+ - "{{ php_wsdlcache_dir }}"
+
+php_ini_list:
+ - { sec: PHP, opt: "cgi.fix_pathinfo", val: "0" }
+
+php_fpm_conf_list:
+ - { sec: www, opt: "user", val: "nginx" }
+ - { sec: www, opt: "group", val: "nginx" }
+ - { sec: www, opt: "listen.owner", val: "nginx" }
+ - { sec: www, opt: "listen.group", val: "nginx" }
+ - { sec: www, opt: "env[PATH]", val: "/sbin:/bin:/usr/sbin:/usr/bin" }
+
+### 回収ファイルリスト
+Recovery_files_list:
+ - "{{ php_ini_path }}"
+ - "{{ php_fpm_conf_path }}"
+
+### Gossテストファイル
+goss_test_dir: "/var/tmp/{{ role_name }}_gosstest"
+
+goss_test_files:
+ - { local_file: /usr/local/bin/goss, remote_file: "{{ goss_test_dir }}/goss", own: root, gro: root, mod: 755 }

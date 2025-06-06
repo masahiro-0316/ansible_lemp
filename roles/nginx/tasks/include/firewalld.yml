@@ -1,0 +1,15 @@
+---
+# tasks/include/firewalld file for nginx
+
+### == ファイヤーウォール設定
+
+- name: httpsポートを開ける。
+  ansible.posix.firewalld:
+    service: "{{ item }}"
+    permanent: true
+    state: enabled
+    immediate: true
+  with_items:
+    - http
+    - https
+  register: firewall

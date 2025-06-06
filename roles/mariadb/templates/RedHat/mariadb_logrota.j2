@@ -1,0 +1,25 @@
+# This logname can be set in /etc/my.cnf
+# by setting the variable "log-error"
+# in the [mysqld] section as follows:
+#
+# [mysqld]
+# log-error=/var/log/mariadb/mariadb.log
+
+/var/log/mariadb/*.log {
+        create 600 mysql mysql
+        su mysql mysql
+        notifempty
+        daily
+        rotate 3
+        missingok
+        compress
+        delaycompress
+        sharedscripts
+    postrotate
+	# just if mariadbd is really running
+        if [ -e /run/mariadb/mariadb.pid ]
+        then
+           kill -1 $(</run/mariadb/mariadb.pid)
+        fi
+    endscript
+}

@@ -1,0 +1,16 @@
+---
+# vars file for php_fpm
+
+php_ini_list:
+ - { sec: PHP, opt: "error_log", val: "syslog" }
+ - { sec: Date, opt: "date.timezone", val: "Asia/Tokyo" }
+
+### 回収ファイルリスト
+Recovery_files_list:
+ - "{{ php_ini_path }}"
+
+### Gossテストファイル
+goss_test_dir: "/var/tmp/{{ role_name }}_gosstest"
+
+goss_test_files:
+ - { local_file: /usr/local/bin/goss, remote_file: "{{ goss_test_dir }}/goss", own: root, gro: root, mod: 755 }

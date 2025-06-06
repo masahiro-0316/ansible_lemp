@@ -1,0 +1,15 @@
+---
+# tasks file for file_Recovery
+### == 事前タスク 
+- name: 作業ディレクトリの作成
+  ansible.builtin.include_tasks: roles/file_Recovery/tasks/1pre_mkdir.yml
+### == 事前タスク END
+
+- name: 回収ファイルリスト変数
+  include_vars: "{{ inventory_hostname }}.yml"
+
+### == 事後タスク
+- name: 設定ファイルを回収
+  ansible.builtin.include_tasks: roles/file_Recovery/tasks/2post_Recovery.yml
+### == 事後タスク END
+

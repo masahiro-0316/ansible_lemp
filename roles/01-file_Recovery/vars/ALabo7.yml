@@ -1,0 +1,12 @@
+--- #Labo7回収
+postfix_dir: /etc/postfix
+dovecot_dir: /etc/dovecot
+dovecot_conf_d: "{{ dovecot_dir }}/conf.d"
+
+Recovery_files_list:
+  - "{{ postfix_dir }}/main.cf" 
+  - "{{ postfix_dir }}/master.cf"
+  - "{{ dovecot_conf_d }}/10-mail.conf"
+  - "{{ dovecot_conf_d }}/10-auth.conf"
+  - "{{ dovecot_conf_d }}/10-ssl.conf"
+  - /etc/aliases

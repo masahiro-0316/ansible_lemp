@@ -1,0 +1,10 @@
+---
+# defaults file for adminer
+adminer_github_url: https://github.com/vrana/adminer/releases/download/v5.3.0/adminer-5.3.0.php
+
+pgsql_version: 16
+db_name: "postgres"
+db_user: "postgres"
+db_passwd: "passwd/123"
+cidr_allow: "127.0.0.1/32"         # 必要に応じて限定
+pgsql_dir: /var/lib/pgsql

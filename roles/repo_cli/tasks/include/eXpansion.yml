@@ -1,0 +1,100 @@
+--- ## RHEL 追加リポジト設定
+
+- name: RHEL8のGPG鍵更新
+  when:
+    - not ansible_check_mode
+    - ansible_distribution_major_version == '8'
+  block:
+    - name: Import EPEL GPG key
+      ansible.builtin.rpm_key:
+        state: present
+        key: https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-8
+      when: not ansible_distribution == 'RedHat'
+
+    - name: Import ELRepo GPG key
+      ansible.builtin.rpm_key:
+        state: present
+        key: https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
+      when: not ansible_distribution == 'Rocky'
+
+  rescue:
+    - name: GPG Key import失敗
+      ansible.builtin.debug:
+        msg: skip
+
+- name: 追加リポジトリ設定
+  when: not ansible_check_mode
+  block:
+    - name: "Rocky{{ ansible_distribution_major_version }} & CentOS{{ ansible_distribution_major_version }} 追加リポジトリインストール"
+      ansible.builtin.dnf:
+        name: "{{ repo_pack }}"
+        state: present
+      register: repo_install
+      when:
+        - ansible_distribution == 'CentOS' or ansible_distribution == 'Rocky'
+
+    - name: "RHEL バージョン{{ ansible_distribution_major_version }} 追加リポジトリインストール"
+      ansible.builtin.dnf:
+        name: epel-next-release
+        state: present
+      register: repo_install
+      when:
+        - ansible_distribution_major_version == '9'
+
+    - name: "RHEL{{ ansible_distribution_major_version }} 追加リポジトリインストール"
+      ansible.builtin.dnf:
+        name: "{{ rhel_repo_pack }}"
+        state: present
+      register: repo_install
+      when:
+        - ansible_distribution == 'RedHat'
+
+    - name: show installed repos
+      ansible.builtin.debug:
+        var: repo_install.results
+
+    - name: リポジトリ元ファイルをバックアップ
+      ansible.builtin.copy:
+        src: "{{ item }}"
+        dest: "{{ linux_remote_backup_dir }}/{{ item | basename }}"
+        mode: "u+r"
+        force: false
+        remote_src: true
+      ignore_errors: true
+      with_items: "{{ Recovery_files_list }}"
+      register: cp_result
+
+#  - ansible.builtin.debug: var=cp_result
+
+- name: "{{ ansible_distribution }}拡張リポジトリ設定変更"
+  community.general.ini_file:
+    path: "{{ item.path }}"
+    section: "{{ item.sec }}"
+    option: "{{ item.opt }}"
+    value: "{{ item.val }}"
+    mode: "u+r"
+  with_items: "{{ ex_repo_list }}"
+  register: baserepo_result
+
+# - ansible.builtin.debug: var=baserepo__result
+
+- name: yum cache update
+  when: baserepo_result.changed and not ansible_check_mode
+  block:
+    - name: yum-clean-metadata
+      ansible.builtin.command:
+        cmd: yum clean metadata
+      register: yum_cleam
+      changed_when: false
+
+    - name: yum cache clean
+      ansible.builtin.debug:
+        var: yum_cleam.stdout_lines
+
+    - name: yum-update-cache
+      ansible.builtin.dnf:
+        list: '*'
+        update_cache: true
+      register: yum_list
+
+#  - ansible.builtin.debug: var=yum_list

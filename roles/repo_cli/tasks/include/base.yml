@@ -1,0 +1,49 @@
+---
+### 標準リポジトリ設定
+
+- name: "{{ ansible_distribution }}-Base.repo元ファイルをバックアップ"
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "{{ linux_remote_backup_dir }}/{{ item | basename }}"
+    mode: "u+r"
+    force: false
+    remote_src: true
+  ignore_errors: true
+  with_items: "{{ Recovery_files_list }}"
+  register: cp_result
+  when: not ansible_check_mode
+
+# - ansible.builtin.debug: var=cp_result
+
+- name: "{{ ansible_distribution }}標準リポジトリ設定変更"
+  community.general.ini_file:
+    path: "{{ item.path }}"
+    section: "{{ item.sec }}"
+    option: "{{ item.opt }}"
+    value: "{{ item.val }}"
+    mode: "u+r"
+  with_items: "{{ base_repo_list }}"
+  register: baserepo_result
+
+# - ansible.builtin.debug: var=baserepo__result
+
+- name: yum cache update
+  when: baserepo_result.changed and not ansible_check_mode
+  block:
+    - name: yum-clean-metadata
+      ansible.builtin.command:
+        cmd: yum clean metadata
+      register: yum_cleam
+      changed_when: false
+
+    - name: yum cache clean
+      ansible.builtin.debug:
+        var: yum_cleam.stdout_lines
+
+    - name: yum-update-cache
+      ansible.builtin.dnf:
+        list: '*'
+        update_cache: true
+      register: yum_list
+
+#  - ansible.builtin.debug: var=yum_list

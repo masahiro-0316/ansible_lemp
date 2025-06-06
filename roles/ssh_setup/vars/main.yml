@@ -1,0 +1,10 @@
+---
+# vars file for ssh_setup
+### ファイル転送用
+mv_sshd_conf:
+ - { local_file: "{{ os_version }}/sshd_config.j2", remote_file: "{{ sshd_conf_path }}", own: root, gro: root, mod: 600 }
+
+### 変更ファイルリスト
+Recovery_files_list:
+ - "{{ sshd_conf_path }}"
+ - "{{ ssh_firewall_path }}"

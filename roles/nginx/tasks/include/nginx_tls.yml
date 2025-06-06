@@ -1,0 +1,51 @@
+---
+# tasks/include/nginx_tls file for nginx
+
+### htmlファイル設定
+
+- name: nginx デフォルト設定ファイルの存在を確認
+  ansible.builtin.stat:
+    path: "{{ nginx_conf_path }}"
+  register: check_file
+
+- name: Nginx index.html
+  when: check_file.stat.exists
+  block:
+    - name: Nginx 設定ファイル類を保存
+      ansible.builtin.copy:
+        src: "{{ item.remote_file }}"
+        dest: "{{ linux_remote_backup_dir }}/{{ item.remote_file | basename }}"
+        mode: "u+r"
+        force: false
+        remote_src: true
+      register: cp_result
+      with_items: "{{ nginx_conf_files }}"
+      when: not ansible_check_mode
+
+    - name: Nginx 設定ファイル類の更新
+      ansible.builtin.template:
+        src: "{{ item.local_file }}"
+        dest: "{{ item.remote_file }}"
+        owner: "{{ item.own }}"
+        group: "{{ item.gro }}"
+        mode: "{{ item.mod }}"
+      register: cp_result
+      with_items: "{{ nginx_conf_files }}"
+
+    - name: Nginx構文を確認
+      ansible.builtin.command:
+        cmd: 'nginx -t'
+      register: cmd_nginx
+      when: cp_result.changed # noqa: no-handler
+      changed_when: "'OK' in cmd_nginx"
+
+    - name: Nginx構文チェック結果
+      ansible.builtin.debug:
+        var: cmd_nginx.stderr_lines
+
+    - name: Nginx サービスを再起動
+      ansible.builtin.systemd:
+        name: nginx
+        state: restarted
+      register: nginx_system
+      when: cp_result.changed # noqa: no-handler

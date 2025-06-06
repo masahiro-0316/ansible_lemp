@@ -1,0 +1,35 @@
+---
+# group_vers file for nginx
+common_name: "{{ ansible_hostname }}"
+### TLS 証明書設定値
+# 国・組織情報
+country_name: JP
+state_or_province_name: Tokyo
+locality_name: Tokyo
+organization_name: lempOrg
+organizational_unit_name: IT
+
+# サーバ代替え名
+server_subject_alt_name:  # 必要に応じて ["DNS:{{ common_name }}", "IP:1.2.3.4"] など
+  - "{{ common_name }}.{{ ansible_domain }}"
+
+### local証明書設置先
+local_cer_dir: "{{ playbook_dir }}/config_backup/{{ inventory_hostname_short }}_cer.d"
+
+### remote証明書設置先
+tls_dir: /etc/pki/nginx
+tls_private_key_dir: "{{ tls_dir }}/private"
+tls_certificate_dir: "{{ tls_dir }}/certs"
+ttls_dir_list:
+  - "{{ tls_dir }}"
+  - "{{ tls_private_key_dir }}"
+  - "{{ tls_certificate_dir }}"
+dhec_dir: "{{ tls_dir }}"
+
+# サーバー証明書ファイル名
+tls_prv_key: server.key
+tls_prv_crt: server.crt
+dhec_pem: dhparam.pem
+
+# html ディレクトリ
+web_html_dir: /usr/share/nginx/html

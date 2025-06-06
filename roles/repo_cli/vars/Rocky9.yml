@@ -1,0 +1,31 @@
+---
+# vars/Rocky9 file for repo_cli
+
+### 作業対象ファイル
+base_repo_path: /etc/yum.repos.d/rocky.repo
+appstream_repo_path: /etc/yum.repos.d/rocky.repo
+extras_repo_path: /etc/yum.repos.d/rocky-extras.repo
+crb_repo_path: /etc/yum.repos.d/rocky.repo
+plus_repo_path: /etc/yum.repos.d/rocky-extras.repo
+devel_repo_path: /etc/yum.repos.d/rocky-devel.repo
+epel_repo_path: /etc/yum.repos.d/epel.repo
+epel_next_repo_path: /etc/yum.repos.d/epel-next.repo
+
+### リポジトリファイル編集
+base_repo_list:
+ - { path: "{{ base_repo_path }}", sec: baseos, opt: "baseurl", val: "{{ local_baseos_url }}" }
+ - { path: "{{ appstream_repo_path }}", sec: appstream, opt: "baseurl", val: "{{ local_appstream_url }}" }
+ - { path: "{{ extras_repo_path }}", sec: extras, opt: "baseurl", val: "{{ local_extras_url }}" }
+ - { path: "{{ crb_repo_path }}", sec: crb, opt: "baseurl", val: "{{ local_crb_url }}" }
+ - { path: "{{ plus_repo_path }}", sec: plus, opt: "baseurl", val: "{{ local_plus_url }}" }
+ - { path: "{{ devel_repo_path }}", sec: devel, opt: "baseurl", val: "{{ local_devel_url }}" }
+
+ex_repo_list:
+ - { path: "{{ epel_repo_path }}", sec: epel, opt: "baseurl", val: "{{ local_epel_url }}" }
+ - { path: "{{ epel_repo_path }}", sec: epel, opt: "enabled", val: "0" }
+ - { path: "{{ epel_next_repo_path }}", sec: epel-next, opt: "baseurl", val: "{{ local_epel_next_url }}" }
+ - { path: "{{ epel_next_repo_path }}", sec: epel-next, opt: "enabled", val: "0" }
+
+### 追加リポジトリーパッケージ
+repo_pack:
+ - epel-release

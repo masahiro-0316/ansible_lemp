@@ -1,0 +1,7 @@
+.vagrant/
+.DS_Store
+.vscode/
+ca.key
+.direnv/
+config_backup/
+.envrc

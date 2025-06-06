@@ -1,0 +1,30 @@
+### システムセキュリティ最新化
+- name: システム最新化
+  hosts: lemp
+  become: true
+
+  pre_tasks:
+    - name: アップデート操作拡張変数値
+      ansible.builtin.debug:
+        msg:
+          - 'RedHat系：「-e sec=false」フルアップデート'
+
+  handlers:
+    - name: reboot_system
+      ansible.builtin.reboot:
+
+  tasks:
+    - name: RedHat
+      when: ansible_os_family == 'RedHat'
+      block:
+        - name: "{{ ansible_distribution }}システム最新化(デフォルトセキュリティ項目のみ）"
+          ansible.builtin.dnf:
+            name: '*'
+            state: "{{ sys | default('latest') }}"
+            security: "{{ sec | default(true) }}"
+          register: update_result
+          notify: reboot_system
+
+        - name: RedHat システム更新結果
+          ansible.builtin.debug:
+            var: update_result.results

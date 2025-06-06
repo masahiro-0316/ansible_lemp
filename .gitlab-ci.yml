@@ -1,0 +1,44 @@
+image: registry.gside.sefira.arcana:35050/masahiro/ansible_main:latest
+
+stages:
+ - syntax
+ - lint
+
+before_script:
+  - cd ./98VM_Lemp.d
+  - ansible-lint --version
+
+check_ansible_syntax:
+  stage: syntax
+  script:
+    - ansible-playbook -i inventory/gside/foundation.ini site.yml --syntax
+  tags:
+    - runner-efes
+
+check_ansible_lint_plybook:
+  stage: lint
+  script:
+    - ansible-lint -c ../.ansible-lint -v --show-relpath -f pep8 --nocolor site.yml
+  tags:
+    - runner-efes
+
+check_ansible_lint_group_vars:
+  stage: lint
+  script:
+    - ansible-lint -c ../.ansible-lint -v --show-relpath -f pep8 --nocolor group_vars/*
+  tags:
+    - runner-efes
+
+check_ansible_lint_host_vars:
+  stage: lint
+  script:
+    - ansible-lint -c ../.ansible-lint -v --show-relpath -f pep8 --nocolor host_vars/*
+  tags:
+    - runner-efes
+
+check_ansible_lint_inventory:
+  stage: lint
+  script:
+    - ansible-lint -c ../.ansible-lint -v --show-relpath -f pep8 --nocolor inventory/*
+  tags:
+    - runner-efes

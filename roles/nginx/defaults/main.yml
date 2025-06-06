@@ -1,0 +1,25 @@
+---
+# defaults file for nginx
+
+web_html_dir: /usr/share/nginx/html
+nginx_index_html: "{{ web_html_dir }}/index.html"
+
+nginx_conf_path: /etc/nginx/nginx.conf
+vhostname: "{{ ansible_hostname }}"
+
+### local証明書設置先
+local_cer_dir: "{{ playbook_dir }}/config_backup/{{ inventory_hostname_short }}_cer.d"
+
+### remote証明書設置先
+tls_dir: /etc/pki/nginx
+tls_private_key_dir: "{{ tls_dir }}/private"
+tls_certificate_dir: "{{ tls_dir }}/certs"
+tls_dir_list:
+ - "{{ tls_dir }}"
+ - "{{ tls_private_key_dir }}"
+ - "{{ tls_certificate_dir }}"
+
+# サーバー証明書ファイル名
+tls_prv_key: server.key
+tls_prv_crt: server.crt
+dhparam_file: "{{ tls_dir }}/dhparam.pem"

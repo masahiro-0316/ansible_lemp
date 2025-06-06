@@ -1,0 +1,3 @@
+--- # mariadb/defaults/main.yml
+mariadb_dir: /var/lib/mysql
+mariadb_socket: "{{ mariadb_dir }}/mysql.sock"

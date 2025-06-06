@@ -1,0 +1,19 @@
+FROM ubuntu:jammy
+
+COPY ansible_Venv.txt /tmp
+RUN apt update \
+ && apt install pip openssh-client curl -y \
+ && pip install -r /tmp/ansible_Venv.txt
+RUN ssh-keygen -f ~/.ssh/master.ecdsa.key -t rsa -N ""
+
+# ansibe追加モジュールのインストール
+RUN ansible-galaxy collection install community.libvirt
+RUN ansible-galaxy collection install community.crypto
+RUN ansible-galaxy collection install community.docker --upgrade
+RUN ansible-galaxy collection install community.general
+RUN ansible-galaxy collection install community.zabbix --upgrade
+RUN ansible-galaxy collection install freeipa.ansible_freeipa --upgrade
+
+# Goss install
+RUN curl -L https://github.com/goss-org/goss/releases/latest/download/goss-linux-amd64 -o /usr/local/bin/goss
+RUN chmod +rx /usr/local/bin/goss

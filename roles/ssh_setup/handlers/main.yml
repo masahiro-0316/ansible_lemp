@@ -1,0 +1,7 @@
+---
+# handlers file for ssh_setup
+- name: ssh_restart
+  ansible.builtin.systemd:
+    name: sshd
+    state: restarted
+  when: not os_version == 'Ubuntu24'

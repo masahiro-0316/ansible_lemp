@@ -1,0 +1,6 @@
+--- # GSIDE Rocky Linux8 BaseVM
+bg_ipv4: "{{ gdev_GSIDE_rbase8g_ip }}"
+fg_ipv4: "{{ GSIDE_rbase8g_ip }}"
+
+# ホスト名
+revi_host: "{{ GSIDE_rbase8g }}"

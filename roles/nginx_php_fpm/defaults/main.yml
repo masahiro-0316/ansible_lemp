@@ -1,0 +1,5 @@
+---
+# defaults file for nginx_php_fpm
+
+php_ini_path: /etc/php.ini
+php_fpm_conf_path: /etc/php-fpm.d/www.conf

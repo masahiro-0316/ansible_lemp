@@ -1,0 +1,12 @@
+---
+# tasks/include/RedHat file for nginx
+
+- name: Nginxインストール
+  ansible.builtin.dnf:
+    name: nginx
+    state: present
+  register: nginx_in
+
+- name: nginx インストール結果
+  ansible.builtin.debug:
+    var: nginx_in.results

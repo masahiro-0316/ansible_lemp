@@ -1,0 +1,12 @@
+---
+### 監視サーバの構築
+- name: lempサーバ設定（Nginx PHP MariaDB）
+  hosts: lemp
+  become: true
+  roles:
+    - { role: self_certificate_authority/, tags: role_ca }
+    - { role: mariadb, tags: role_db }
+    - { role: php_fpm, tags: role_php }
+    - { role: nginx, tags: role_web }
+    - { role: nginx_php_fpm, tags: role_webphp }
+    - { role: adminer, tags: role_adminer }

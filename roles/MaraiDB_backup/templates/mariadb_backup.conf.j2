@@ -1,0 +1,29 @@
+#!/bin/bash -xe
+#### 所要時間計測
+### ログディレクトリ変数の設定
+WORK_DIR=${HOME}/.work.d
+LOG_DIR=${WORK_DIR}/logs/`basename $0 .sh`/$(date +%Y)/$(date +%m)
+DEBUG_LOG_DIR=${LOG_DIR}
+
+### ログディレクトリの作成
+mkdir -pv ${DEBUG_LOG_DIR} ${LOG_DIR}
+
+### デバッグログの出力 
+### デバッグ時のみコメントアウトする。
+exec 2> ${DEBUG_LOG_DIR}/debug_`basename $0 .sh`_$(date +%d).log
+DEBUG_LOG=${DEBUG_LOG_DIR}/debug_`basename $0 .sh`_$(date +%d).log
+
+###  ログファイル変数の設定
+DATE=`date +%Y%m%d%H%M`
+SCRIPT_LOG=${LOG_DIR}/MAIN_PS_${DATE::8}Day.log
+TEST_LOG=${LOG_DIR}/TEST_PS_${DATE::8}Day.log
+DUMP_LOG=${LOG_DIR}/DBDUMP_${DATE::8}Day.log
+SKIP_LOGS=${LOG_DIR}/SKIP_PS_${DATE::8}Day.log
+START_TIME=`date`
+#echo "${DATE}"
+#echo "${LOG_DIR}"
+#echo "${SCRIPT_LOG}"
+
+### 通知メール
+MAIL_ADDRESS={{ local_report_mail }}
+

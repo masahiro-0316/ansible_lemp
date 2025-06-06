@@ -1,0 +1,16 @@
+---
+### 事前タスク
+
+- name: 構成管理対象マシン上での原本ファイルのバックアップディレクトリ作成
+  ansible.builtin.file:
+    path: "{{ item }}"
+    owner: "{{ ansible_ssh_user }}"
+    group: "{{ ansible_ssh_user }}"
+    mode: "0750"
+    state: directory
+    recurse: true
+  register: bakup_dir
+  with_items: "{{ linux_remote_backup_dir }}"
+  changed_when: false
+
+# - debug: var=backup_dir

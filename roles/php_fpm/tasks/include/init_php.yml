@@ -1,0 +1,50 @@
+---
+# tasks/include/init_php file for php_fpm
+
+### iniファイル設定
+
+- name: php.iniファイルの存在を確認
+  ansible.builtin.stat:
+    path: "{{ php_ini_path }}"
+  register: check_file
+
+- name: PHP php.ini設定
+  when: check_file.stat.exists
+  block:
+    - name: php.ini元ファイルをバックアップ
+      ansible.builtin.copy:
+        src: "{{ php_ini_path }}"
+        dest: "{{ linux_remote_backup_dir }}/{{ php_ini_path | basename }}"
+        mode: "u+r"
+        force: false
+        remote_src: true
+      register: cp_result
+      when: not ansible_check_mode
+
+    - name: php.iniファイル変更
+      community.general.ini_file:
+        path: "{{ php_ini_path }}"
+        section: "{{ item.sec }}"
+        option: "{{ item.opt }}"
+        value: "{{ item.val }}"
+        mode: "+r"
+      with_items: "{{ php_ini_list }}"
+      register: ini_edit
+
+    - name: PHP-FPMサービス起動
+      ansible.builtin.systemd:
+        state: restarted
+        name: php-fpm
+        enabled: true
+      register: php_system
+      when: ini_edit.changed # noqa: no-handler
+
+### PHP-FPM起動
+
+- name: PHP-FPMサービス起動
+  ansible.builtin.systemd:
+    state: started
+    name: php-fpm
+    enabled: true
+  register: php_system
+  when: not ansible_check_mode

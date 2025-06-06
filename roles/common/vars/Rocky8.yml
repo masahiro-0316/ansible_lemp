@@ -1,0 +1,25 @@
+--- # common/vars/RedHat8
+### == サーバパッケージ
+redhat_pack:
+  - git
+  - vim
+  - rsync
+  - chrony
+  - setroubleshoot-server
+  - unzip
+
+### == EPEL
+epel_packa: epel-release
+rhel_epel_packa: https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+
+### 作業対象ファイル
+SETroubleShoot_path: /etc/tmpfiles.d/setroubleshoot.conf
+SETroubleShoot_dir_path: /var/run/setroubleshoot
+
+### ファイル転送用
+mv_selinux_conf:
+  - { local_file: "{{ os_version }}/selinux", remote_file: "{{ SETroubleShoot_path }}", own: root, gro: root, mod: 644 }
+
+### == ディレクトリ権限の変更
+ch_selinux_dir:
+  - { remote_dir: "{{ SETroubleShoot_dir_path }}", own: setroubleshoot, gro: root, mod: 755 }

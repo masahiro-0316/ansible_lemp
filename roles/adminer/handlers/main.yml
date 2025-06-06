@@ -1,0 +1,7 @@
+---
+# handlers file for adminer
+
+- name: Restart PostgreSQL
+  ansible.builtin.service:
+    name: "postgresql-{{ pgsql_version }}.service"
+    state: restarted
