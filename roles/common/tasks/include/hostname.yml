@@ -4,6 +4,10 @@
   ansible.builtin.hostname:
     name: "{{ server_hostname }}"
   register: host_result
+  when:
+    - ansible_virtualization_type != "docker"
+    - ansible_virtualization_type != "container"
+    - ansible_env.GITHUB_ACTIONS is not defined or not ansible_env.GITHUB_ACTIONS
 
 - name: ホスト名
   ansible.builtin.debug:
