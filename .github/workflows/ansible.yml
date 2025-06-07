@@ -49,11 +49,14 @@ jobs:
     needs: lint
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.x'
-      - name: Restore pip
+      - name: Install Python 3.12 & pip
+        run: |
+          dnf install -y python3.12 python3.12-pip
+          alternatives --install /usr/bin/python3 python3 /usr/bin/python3.12 100
+          alternatives --set python3 /usr/bin/python3.12
+          python3.12 --version
+          pip3.12 --version
+      - name: Cache pip
         uses: actions/cache@v4
         with:
           path: ~/.cache/pip
