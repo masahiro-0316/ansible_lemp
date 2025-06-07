@@ -1,12 +1,15 @@
-image: registry.gside.sefira.arcana:35050/masahiro/ansible_main:latest
-
 stages:
- - syntax
- - lint
-
-before_script:
-  - cd ./98VM_Lemp.d
-  - ansible-lint --version
+  - build
+  - syntax
+  - lint
+ 
+ci_container_build:
+  stage: build
+  script:
+    - docker --version
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker build -f Dockerfile.CICD -t ${CI_REGISTRY_IMAGE} .
+    - docker push ${CI_REGISTRY_IMAGE}
 
 check_ansible_syntax:
   stage: syntax

@@ -1,0 +1,23 @@
+name: Ansible Lint
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Install Ansible tools
+        run: pip install -r pip_ansible_requirements.txt
+      - name: Syntax check
+        run: ansible-playbook -i inventory site.yml --syntax-check
+      - name: Run ansible-lint
+        run: ansible-lint -c .ansible-lint -v --show-relpath site.yml group_vars/* host_vars/* inventory/*
