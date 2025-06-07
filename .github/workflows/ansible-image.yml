@@ -29,9 +29,12 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build Docker image
-        run: |
-          docker build -t ghcr.io/${{ github.actor }}/ansible-test:latest -f Dockerfile.CICD .
-      - name: Push Docker image
-        run: |
-          docker push ghcr.io/${{ github.actor }}/ansible-test:latest
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: Dockerfile.CICD
+          push: true
+          tags: |
+            ghcr.io/${{ github.actor }}/ansible-test:latest
+            ghcr.io/${{ github.actor }}/ansible-test:${{ github.sha }}
