@@ -2,14 +2,12 @@ name: Ansible Lint
 
 on:
   push:
-    branches: [ main ]
     paths:
       - 'roles/**/*.yml'
       - 'host_vars/**/*.yml'
       - 'group_vars/**/*.yml'
       - 'inventory/**/*.yml'
   pull_request:
-    branches: [ main ]
     paths:
       - 'roles/**/*.yml'
       - 'host_vars/**/*.yml'
