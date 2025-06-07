@@ -18,6 +18,8 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
+    container:
+      image: quay.io/centos/centos:stream9
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python
@@ -39,6 +41,8 @@ jobs:
 
   local-test:
     runs-on: ubuntu-latest
+    container:
+      image: quay.io/centos/centos:stream9
     needs: lint
     steps:
       - uses: actions/checkout@v4
