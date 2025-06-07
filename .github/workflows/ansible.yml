@@ -70,4 +70,4 @@ jobs:
       - name: Execute role tests locally
         run: |
           python3.12 -m pip show cryptography
-          ansible-playbook -i inventory/localhost.ini -c local site.yml -e local_user=root 
+          ansible-playbook -i inventory/localhost.ini -c local site.yml -e local_user=root -CD
