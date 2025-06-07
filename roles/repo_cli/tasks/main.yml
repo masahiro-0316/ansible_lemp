@@ -7,7 +7,7 @@
     - "vars/{{ ansible_os_family }}.yml"
 
 - name: 作業ディレクトリ作成
-  ansible.builtin.include_tasks: roles/01-file_Recovery/tasks/1pre_mkdir.yml
+  ansible.builtin.include_tasks: roles/file_Recovery/tasks/1pre_mkdir.yml
 ### == 事前タスク END
 
 ### == 標準リポジトリ設定
@@ -30,5 +30,5 @@
 
 ### == 事後タスク
 - name: ファイル回収
-  ansible.builtin.include_tasks: roles/01-file_Recovery/tasks/2post_Recovery.yml
+  ansible.builtin.include_tasks: roles/file_Recovery/tasks/2post_Recovery.yml
 ### == 事後タスク END

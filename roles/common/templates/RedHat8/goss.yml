@@ -29,7 +29,7 @@ file:
         contents: []
     /home/{{ ansible_ssh_user }}/.vim/stmp:
         exists: true
-        mode: "0755"
+        mode: "0750"
         owner: {{ ansible_ssh_user }}
         group: {{ ansible_ssh_user }}
         filetype: directory

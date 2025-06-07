@@ -11,7 +11,7 @@
 
 - name: フォルダ回収先の作成
   ansible.builtin.include_tasks:
-    file: roles/01-file_Recovery/tasks/1pre_mkdir.yml
+    file: roles/file_Recovery/tasks/1pre_mkdir.yml
 ### 事前タスク END
 
 ### php-fpm インストール
@@ -36,5 +36,5 @@
 ### 事後タスク
 - name: ファイル回収タスク
   ansible.builtin.include_tasks:
-    file: roles/01-file_Recovery/tasks/2post_Recovery.yml
+    file: roles/file_Recovery/tasks/2post_Recovery.yml
 ### 事後タスク END

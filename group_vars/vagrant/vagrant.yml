@@ -4,3 +4,5 @@ ansible_ssh_port: "{{ sshd_port }}"
 ansible_ssh_user: vagrant
 sshd_port: 22
 ansible_become_pass: vagrant
+
+mariadb_root_pass: passwd/000

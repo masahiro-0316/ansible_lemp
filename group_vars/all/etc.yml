@@ -1,18 +1,10 @@
 ---
 ### SSHリモート接続
-ansible_ssh_private_key_file: ~/.ssh/master.ecdsa.key
 ansible_ssh_port: "{{ sshd_port }}"
-ansible_ssh_user: daath
-sshd_port: 52002
-gitlab_ssh_port: "{{ sshd_port }}"
+sshd_port: 22222
 
 # 管理ユーザーへの接続拡張認証公開鍵登録ファイル
 ex_auth_keys: ".ssh/extend_authorized_keys"
-# サーバ間バックアップ認証用公開鍵登録ファイル(設定パスは各ロールで行う)
-bk_auth_keys: ".ssh/backup_authorized_keys"
-
-### 特権ユーザ
-ansible_become_pass: "{{ vault_become_pass }}"
 
 ### 実行日
 sirial_date: "{{ lookup('pipe', 'date +%y%m%d%H%M') }}"
