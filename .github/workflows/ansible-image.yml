@@ -1,4 +1,4 @@
-name: CI
+name: test_image_build
 
 on:
   push:
@@ -31,7 +31,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build Docker image
         run: |
-          docker build -t ghcr.io/${{ github.repository }}/ansibletest:latest -f Dockerfile.CICD .
+          docker build -t ghcr.io/${{ github.repository }}/ansible-test:latest -f Dockerfile.CICD .
       - name: Push Docker image
         run: |
-          docker push ghcr.io/${{ github.repository }}/ansibletest:latest
+          docker push ghcr.io/${{ github.repository }}/ansible-test:latest
