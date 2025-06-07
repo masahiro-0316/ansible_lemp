@@ -18,6 +18,36 @@
 `4th_lemp.yml`にはLEMP環境の作動確認のため`adminer`の設定ロールが組み込まれています。
 本プレイブックを使用してLEMP環境だけ作成したい場合は、`adminer`ロールは削除してしまって問題ありません。
 
+## 検証実施済み環境
+
+Vagrantイメージを使用して以下のOSでの実行検証済みとなります。
+
+- Rocky8
+- Rocky9
+
+`Vagrant`ディレクトリ内に検証で使用したVgrantfileがありますが仮想化はKVMを使用しているのでVirtualBoxを使用している場合は、以下を参考に適宜ファイルの書き換えをして下さい。
+
+> **VirtualBoxでVagrantを利用する場合の注意**
+>
+> デフォルトの `Vagrantfile` はKVM（libvirt）用の設定になっています。VirtualBoxで利用する場合は、以下の点を修正してください。
+>
+> 1. **providerの指定を変更**  
+>    `config.vm.provider :libvirt do |p| ... end` を  
+>    `config.vm.provider "virtualbox" do |vb| ... end` に変更します。
+>
+> 2. **libvirt専用の設定を削除**  
+>    例: `management_network_address` や `dev`, `bridge` などlibvirt固有のオプションは削除またはVirtualBox用に調整します。
+>
+> 3. **CPU・メモリの指定方法を修正**  
+>    VM定義内の `machine.vm.provider "libvirt" do |spec| ... end` を  
+>    `machine.vm.provider "virtualbox" do |vb| ... end` に変更し、  
+>    `vb.cpus = 4` や `vb.memory = 4096` のように指定します。
+>
+> 4. **ネットワーク設定の調整**  
+>    `public_network` の `dev` や `bridge` オプションはVirtualBoxでは不要な場合が多いので、必要に応じて削除してください。
+>
+> 詳細な修正例が必要な場合は、`Vagrantfile`の該当箇所を参照してください。
+
 ## 事前準備
 
 1. 必要な Python パッケージをインストールします。
@@ -41,6 +71,23 @@
    ansible-playbook -i inventory/vagrant_development.ini site.yml
    ```
 3. 必要に応じて `group_vars` や `host_vars` に定義されている各種変数を変更し、環境へ合わせた設定を行ってください。
+
+## group_vars で設定されている主な変数
+
+`group_vars` ディレクトリには、実行環境ごとの変数が YAML 形式で定義されています。目的に応じて値を変更することで、より柔軟にプレイブックを利用できます。
+
+- `all/dir.yml`
+  - バックアップ先や一時ファイル用ディレクトリのパスを定義します。例: `linux_backup_dir`、`local_backup_org` など
+- `all/etc.yml`
+  - SSH 接続ポート (`sshd_port`) や拡張認証用公開鍵パス (`ex_auth_keys`)、実行日時を保持する変数 (`run_date` など) を設定します。
+- `lemp/nginx.yml`
+  - Nginx 用 TLS 設定をまとめており、証明書の格納先ディレクトリや `server_subject_alt_name` といった項目を管理します。
+- `localhost/etc.yml`
+  - localhost 環境での接続ユーザーやパスワード、MariaDB root パスワードなどを指定します。
+- `vagrant/vagrant.yml`
+  - Vagrant 開発環境向けの接続設定が記載されています。接続ユーザーや `ansible_become_pass` などを変更できます。
+
+これらの変数を編集することで、デプロイ対象の環境や要件に合わせた設定を行うことが可能です。
 
 ## Docker コンテナでの実行
 

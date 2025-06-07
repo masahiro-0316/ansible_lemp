@@ -11,7 +11,7 @@ Vagrant.configure("2") do |config|
   end
 
   config.vm.define "lemp" do |machine|
-    machine.vm.box = "generic/rocky8"
+    machine.vm.box = "generic/rocky9"
     machine.vm.hostname = "lemp.example.com"
     machine.vm.network "private_network", ip: "10.116.0.10"
     machine.vm.network "public_network", ip: "192.168.246.113", bridge:'br0', dev: 'br0'
