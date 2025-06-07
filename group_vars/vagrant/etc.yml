@@ -1,4 +1,4 @@
---- ### Vagrant環境
+---
 # vagrant開発環境接続用
 ansible_ssh_port: "{{ sshd_port }}"
 ansible_ssh_user: vagrant

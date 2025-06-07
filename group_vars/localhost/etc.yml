@@ -1,4 +1,5 @@
 ---
+# localhostで実行する場合
 ansible_ssh_port: "{{ sshd_port }}"
 ansible_ssh_user: "{{ local_user }}"
 sshd_port: 22

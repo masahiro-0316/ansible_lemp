@@ -82,10 +82,10 @@ Vagrantイメージを使用して以下のOSでの実行検証済みとなり�
   - SSH 接続ポート (`sshd_port`) や拡張認証用公開鍵パス (`ex_auth_keys`)、実行日時を保持する変数 (`run_date` など) を設定します。
 - `lemp/nginx.yml`
   - Nginx 用 TLS 設定をまとめており、証明書の格納先ディレクトリや `server_subject_alt_name` といった項目を管理します。
-- `localhost/etc.yml`
+- `localhost/*.yml`
   - localhost 環境での接続ユーザーやパスワード、MariaDB root パスワードなどを指定します。
-- `vagrant/vagrant.yml`
-  - Vagrant 開発環境向けの接続設定が記載されています。接続ユーザーや `ansible_become_pass` などを変更できます。
+- `vagrant/*.yml`
+  - Vagrant 環境での接続ユーザーやパスワード、MariaDB root パスワードなどを指定します。
 
 これらの変数を編集することで、デプロイ対象の環境や要件に合わせた設定を行うことが可能です。
 
