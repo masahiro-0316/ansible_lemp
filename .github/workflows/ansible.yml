@@ -25,9 +25,43 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.x'
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('pip_ansible_requirements.txt') }}
+          restore-keys: ${{ runner.os }}-pip-
       - name: Install Ansible tools
         run: pip install -r pip_ansible_requirements.txt
       - name: Syntax check
         run: ansible-playbook -i inventory site.yml --syntax-check
       - name: Run ansible-lint
         run: ansible-lint -c .ansible-lint -v --show-relpath site.yml group_vars/* host_vars/* inventory/*
+
+  local-test:
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Restore pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('pip_ansible_requirements.txt') }}
+          restore-keys: ${{ runner.os }}-pip-
+      - name: Install Ansible
+        run: |
+          pip install -r pip_ansible_requirements.txt
+          ansible-galaxy collection install -r ansible_galaxy.yml
+      - name: Execute role tests locally
+        run: |
+          set -e
+          for dir in roles/*/tests; do
+            if [ -f "$dir/test.yml" ]; then
+              ansible-playbook -i "$dir/inventory" -c local "$dir/test.yml"
+            fi
+          done
