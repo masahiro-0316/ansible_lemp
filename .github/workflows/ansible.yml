@@ -68,4 +68,6 @@ jobs:
           pip3.12 install -r pip_ansible_requirements.txt
           ansible-galaxy collection install -r ansible_galaxy.yml
       - name: Execute role tests locally
-        run: ansible-playbook -i inventory/localhost.ini -c local site.yml -e local_user=root 
+        run: |
+          python3.12 -m pip show cryptography
+          ansible-playbook -i inventory/localhost.ini -c local site.yml -e local_user=root 
