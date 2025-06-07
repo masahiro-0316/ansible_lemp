@@ -1,0 +1,7 @@
+---
+ansible_ssh_port: "{{ sshd_port }}"
+ansible_ssh_user: "{{ local_user }}"
+sshd_port: 22
+ansible_become_pass: ""
+
+mariadb_root_pass: passwd/000
