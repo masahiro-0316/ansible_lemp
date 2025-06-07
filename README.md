@@ -80,12 +80,11 @@ Vagrantイメージを使用して以下のOSでの実行検証済みとなり�
   - バックアップ先や一時ファイル用ディレクトリのパスを定義します。例: `linux_backup_dir`、`local_backup_org` など
 - `all/etc.yml`
   - SSH 接続ポート (`sshd_port`) や拡張認証用公開鍵パス (`ex_auth_keys`)、実行日時を保持する変数 (`run_date` など) を設定します。
+  - MariaDB root パスワード(`mariadb_root_pass`)が記載してあります。
 - `lemp/nginx.yml`
   - Nginx 用 TLS 設定をまとめており、証明書の格納先ディレクトリや `server_subject_alt_name` といった項目を管理します。
-- `localhost/*.yml`
-  - localhost 環境での接続ユーザーやパスワード、MariaDB root パスワードなどを指定します。
 - `vagrant/*.yml`
-  - Vagrant 環境での接続ユーザーやパスワード、MariaDB root パスワードなどを指定します。
+  - Vagrant 環境での接続ユーザーやパスワード
 
 これらの変数を編集することで、デプロイ対象の環境や要件に合わせた設定を行うことが可能です。
 
