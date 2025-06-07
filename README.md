@@ -18,6 +18,15 @@
 `4th_lemp.yml`にはLEMP環境の作動確認のため`adminer`の設定ロールが組み込まれています。
 本プレイブックを使用してLEMP環境だけ作成したい場合は、`adminer`ロールは削除してしまって問題ありません。
 
+### インストールソフトウェアのバージョン指定
+
+`MariaDB`と`PHP`のバージョンは以下の変数で指定しています。
+
+| ロール名            | 変数名             | 説明                      | デフォルト値 |
+| --------------- | --------------- | ----------------------- | ------ |
+| `roles/mariadb` | `mariadb_Ver`   | インストールする MariaDB のバージョン | `10.3` |
+| `roles/php_fpm` | `php_version`   | インストールする PHP のバージョン     | `8.2`  |
+
 ## 検証実施済み環境
 
 Vagrantイメージを使用して以下のOSでの実行検証済みとなります。
@@ -81,6 +90,8 @@ Vagrantイメージを使用して以下のOSでの実行検証済みとなり�
 - `all/etc.yml`
   - SSH 接続ポート (`sshd_port`) や拡張認証用公開鍵パス (`ex_auth_keys`)、実行日時を保持する変数 (`run_date` など) を設定します。
   - MariaDB root パスワード(`mariadb_root_pass`)が記載してあります。
+  - Ansibleのログインユーザ(`ansible_ssh_user`)
+  - Ansibleのログインユーザパスワード(`ansible_become_pass:`)
 - `lemp/nginx.yml`
   - Nginx 用 TLS 設定をまとめており、証明書の格納先ディレクトリや `server_subject_alt_name` といった項目を管理します。
 - `vagrant/*.yml`
