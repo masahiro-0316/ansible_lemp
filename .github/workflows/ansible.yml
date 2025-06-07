@@ -47,8 +47,6 @@ jobs:
     container:
       image: rockylinux:9
     needs: lint
-    env:
-      local_user: $GITHUB_ACTOR
     steps:
       - uses: actions/checkout@v4
       - name: Install Python 3.12 & pip
@@ -70,4 +68,4 @@ jobs:
           pip3.12 install -r pip_ansible_requirements.txt
           ansible-galaxy collection install -r ansible_galaxy.yml
       - name: Execute role tests locally
-        run: ansible-playbook -i inventory/localhost.ini -c local site.yml -e local_user=${{ env.local_user }}
+        run: ansible-playbook -i inventory/localhost.ini -c local site.yml -e local_user=root 
