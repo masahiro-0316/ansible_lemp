@@ -1,3 +1,4 @@
 ---
 # ホスト名
 server_hostname: dev-lemp
+test: test
