@@ -56,6 +56,7 @@ jobs:
           alternatives --set python3 /usr/bin/python3.12
           python3.12 --version
           pip3.12 --version
+          curl -L https://github.com/goss-org/goss/releases/latest/download/goss-linux-amd64 -o /usr/local/bin/goss
       - name: Cache pip
         uses: actions/cache@v4
         with:
