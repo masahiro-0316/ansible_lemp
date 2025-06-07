@@ -4,5 +4,8 @@
   hosts: lemp
   become: true
   roles:
-    - { role: ssh_setup, tags: role_ssh }
-    - { role: common, tags: role_com }
+    - role: ssh_setup
+      tags: role_ssh
+      when: ansible_virtualization_type != "docker" and ansible_virtualization_type != "container"
+    - role: common
+      tags: role_common

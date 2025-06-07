@@ -24,6 +24,10 @@
 - name: ホスト名の設定
   ansible.builtin.include_tasks: include/hostname.yml
   tags: task_user
+  when:
+    - ansible_virtualization_type != "docker"
+    - ansible_virtualization_type != "container"
+    - ansible_env.GITHUB_ACTIONS is not defined or not ansible_env.GITHUB_ACTIONS
 
 - name: ファイル回収
   ansible.builtin.include_tasks: roles/file_Recovery/tasks/2post_Recovery.yml

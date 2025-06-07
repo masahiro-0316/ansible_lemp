@@ -12,6 +12,11 @@
   handlers:
     - name: reboot_system
       ansible.builtin.reboot:
+        msg: "システムを再起動します。"
+      when:
+        - ansible_virtualization_type != "docker"
+        - ansible_virtualization_type != "container"
+        - ansible_env.GITHUB_ACTIONS is not defined or not ansible_env.GITHUB_ACTIONS
 
   tasks:
     - name: RedHat

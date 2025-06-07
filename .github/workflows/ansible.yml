@@ -2,31 +2,41 @@ name: Ansible Lint
 
 on:
   push:
-    branches: [ main ]
     paths:
       - 'roles/**/*.yml'
       - 'host_vars/**/*.yml'
       - 'group_vars/**/*.yml'
       - 'inventory/**/*.yml'
   pull_request:
-    branches: [ main ]
     paths:
       - 'roles/**/*.yml'
       - 'host_vars/**/*.yml'
       - 'group_vars/**/*.yml'
       - 'inventory/**/*.yml'
+  workflow_dispatch:
 
 jobs:
   lint:
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/${{ github.actor}}/ansible-test:latest
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Install Python 3.12 & pip
+        run: |
+          dnf install -y python3.12 python3.12-pip
+          alternatives --install /usr/bin/python3 python3 /usr/bin/python3.12 100
+          alternatives --set python3 /usr/bin/python3.12
+          python3.12 --version
+          pip3.12 --version
+      - name: Cache pip
+        uses: actions/cache@v4
         with:
-          python-version: '3.x'
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('pip_ansible_requirements.txt') }}
+          restore-keys: ${{ runner.os }}-pip-
       - name: Install Ansible tools
-        run: pip install -r pip_ansible_requirements.txt
+        run: pip3.12 install -r pip_ansible_requirements.txt
       - name: Syntax check
         run: ansible-playbook -i inventory site.yml --syntax-check
       - name: Run ansible-lint
