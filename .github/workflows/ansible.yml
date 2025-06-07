@@ -19,7 +19,7 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/${{ github.repository }}/ansible-test:latest
+      image: ghcr.io/${{ github.actor}}/ansible-test:latest
     steps:
       - uses: actions/checkout@v4
       - name: Install Python 3.12 & pip
@@ -45,7 +45,7 @@ jobs:
   local-test:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/${{ github.repository }}/ansible-test:latest
+      image: ghcr.io/${{ github.actor}}/ansible-test:latest
     needs: lint
     steps:
       - uses: actions/checkout@v4
