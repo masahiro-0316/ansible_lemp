@@ -22,9 +22,12 @@ jobs:
       image: rockylinux:9
     steps:
       - uses: actions/checkout@v4
-      - name: Install Python & pip
+      - name: Install Python 3.10 & pip
         run: |
-          dnf install -y python3 python3-pip
+          dnf install -y python3.10 python3.10-pip
+          alternatives --set python3 /usr/bin/python3.10
+          python3 --version
+          pip3 --version
       - name: Cache pip
         uses: actions/cache@v4
         with:
