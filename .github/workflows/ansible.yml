@@ -19,7 +19,7 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     container:
-      image: quay.io/centos/centos:stream9
+      image: rockylinux:9
     steps:
       - uses: actions/checkout@v4
       - name: Install Python & pip
@@ -41,7 +41,7 @@ jobs:
   local-test:
     runs-on: ubuntu-latest
     container:
-      image: quay.io/centos/centos:stream9
+      image: rockylinux:9
     needs: lint
     steps:
       - uses: actions/checkout@v4
