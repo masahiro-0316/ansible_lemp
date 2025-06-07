@@ -1,7 +1,7 @@
 ---
 ### SSHリモート接続
 ansible_ssh_port: "{{ sshd_port }}"
-sshd_port: 22222
+sshd_port: 22
 
 # 管理ユーザーへの接続拡張認証公開鍵登録ファイル
 ex_auth_keys: ".ssh/extend_authorized_keys"

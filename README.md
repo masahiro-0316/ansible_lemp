@@ -15,6 +15,9 @@
 - **group_vars / host_vars**  ― 接続先ごとの変数定義。
 - **roles**  ― nginx、mariadb、php_fpm など個別機能を実装したロール群。
 
+`4th_lemp.yml`にはLEMP環境の作動確認のため`adminer`の設定ロールが組み込まれています。
+本プレイブックを使用してLEMP環境だけ作成したい場合は、`adminer`ロールは削除してしまって問題ありません。
+
 ## 事前準備
 
 1. 必要な Python パッケージをインストールします。
@@ -28,7 +31,7 @@
 
 ## 使い方
 
-1. インベントリを選択します。ローカルで実行する場合は `inventory/localhost.ini`、Vagrant で作成した仮想マシンへ実行する場合は `inventory/vagrant_development.ini` を指定します。
+1. インベントリを選択します。ローカルで実行する場合は `inventory/localhost.ini`、開発用にVagrant で作成した仮想マシンへ実行する用に `inventory/vagrant_development.ini` が用意されている。
 2. `site.yml` を実行してサーバーを構築します。
    ```bash
    ansible-playbook -i inventory/localhost.ini site.yml
@@ -46,6 +49,12 @@
 ```bash
 docker compose run --rm ansible bash
 ```
+
+### Docker利用時の留意点
+
+`.env`ファイルを使用してdockerコンテナ内のユーザとグループIDを設定している。
+ユーザIDとグループIDはデフォルトで1001で設定してある。
+利用者は、適宜Dockerを実行するユーザのIDと同じになるように修正をして下さい。
 
 ## ライセンス
 
