@@ -17,10 +17,12 @@ on:
       - ansible_galaxy.yml
   workflow_dispatch:
 
-
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
       - uses: actions/checkout@v4
       - name: Log in to GitHub Container Registry
@@ -37,4 +39,3 @@ jobs:
           push: true
           tags: |
             ghcr.io/${{ github.actor }}/ansible-test:latest
-            ghcr.io/${{ github.actor }}/ansible-test:${{ github.sha }}
