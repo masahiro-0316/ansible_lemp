@@ -59,10 +59,4 @@ jobs:
           pip install -r pip_ansible_requirements.txt
           ansible-galaxy collection install -r ansible_galaxy.yml
       - name: Execute role tests locally
-        run: |
-          set -e
-          for dir in roles/*/tests; do
-            if [ -f "$dir/test.yml" ]; then
-              ansible-playbook -i "$dir/inventory" -c local "$dir/test.yml"
-            fi
-          done
+        run: ansible-playbook -i inventory/localhost.ini site.yml -CD
