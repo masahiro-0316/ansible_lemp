@@ -115,4 +115,6 @@ docker compose run --rm ansible bash
 
 ## ライセンス
 
-このプロジェクトは [Apache License 2.0](LICENSE) の下で公開されています。
+このプロジェクトは[Ansible同様GNU 一般公衆利用許諾契約書バージョン](https://docs.ansible.com/automation-controller/4.0.0/html_ja/administration/license-support.html) に基づいたライセンスとなります。  
+GNU General Public License v3.0 以降
+全文は「COPYING」をご覧ください
