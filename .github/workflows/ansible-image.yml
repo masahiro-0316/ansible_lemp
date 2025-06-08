@@ -38,4 +38,4 @@ jobs:
           file: Dockerfile.CICD
           push: true
           tags: |
-            ghcr.io/${{ github.actor }}/ansible-test:latest
+            ghcr.io/${{ github.actor }}/${{ github.event.repository.name }}-test:latest

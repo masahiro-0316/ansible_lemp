@@ -19,7 +19,7 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/${{ github.actor}}/ansible-test:latest
+      image: ghcr.io/${{ github.actor }}/${{ github.event.repository.name }}-test:latest
     steps:
       - uses: actions/checkout@v4
       - name: Install Python 3.12 & pip
