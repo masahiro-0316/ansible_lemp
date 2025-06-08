@@ -1,38 +1,36 @@
-Role Name
+adminer
 =========
 
-A brief description of the role goes here.
+Adminer ウェブベース管理ツールをセットアップし、PostgreSQL データベースに対する接続環境を整備します。
 
-Requirements
+要件
 ------------
+- Ansible 2.9 以上  
+- ターゲットホストに PostgreSQL がインストール済み  
+- PHP 実行環境（php-cli など）が利用可能  
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
-
-Role Variables
+ロール変数
 --------------
+| 変数名               | 説明                                                     | デフォルト値                                                                             |
+| -------------------- | -------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `adminer_github_url` | Adminer PHP ファイルのダウンロード元 GitHub リリース URL | `https://github.com/vrana/adminer/releases/download/v5.3.0/adminer-5.3.0.php`              |
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
-
-Dependencies
+依存関係
 ------------
+- `common`：OS ファミリー依存の変数設定  
+- （必要に応じて）`php_fpm`／`nginx_php_fpm` などで PHP 環境を整備
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
-
-Example Playbook
+サンプル Playbook
 ----------------
+```yaml
+- hosts: db
+  roles:
+    - role: adminer
+      # インストールするAdminerを変更したい場合は以下の用にGitHubのURLを指定する。
+      adminer_github_url: "https://github.com/vrana/adminer/releases/download/v5.3.0/adminer-5.3.0.php" 
+````
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+## ライセンス
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
-
-License
--------
-
-BSD
-
-Author Information
-------------------
-
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+This role is licensed under the Apache License, Version 2.0.
+See [LICENSE](../../LICENSE) for details.

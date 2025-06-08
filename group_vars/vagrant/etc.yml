@@ -1,0 +1,4 @@
+---
+# vagrant開発環境接続用
+ansible_ssh_user: vagrant
+ansible_become_pass: vagrant

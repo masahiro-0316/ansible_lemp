@@ -1,38 +1,50 @@
-Role Name
+self_certificate_authority
 =========
 
-A brief description of the role goes here.
+社内向け自己署名 CA（Certificate Authority）およびサーバー証明書を生成・配布します。
 
-Requirements
+要件
 ------------
+- Ansible 2.9 以上  
+- OpenSSL が利用可能な環境  
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
-
-Role Variables
+ロール変数
 --------------
+| 変数名                     | 説明                                      | デフォルト値                                                |
+| -------------------------- | ----------------------------------------- | ----------------------------------------------------------- |
+| `common_name`              | サーバー証明書・CA で使用する共通名       | `{{ ansible_hostname }}`                                    |
+| `ca_common_name`           | CA 証明書の共通名                         | `{{ common_name }}-CA`                                      |
+| `country_name`             | 国名                                      | `JP`                                                        |
+| `state_or_province_name`   | 都道府県名                                | `Tokyo`                                                     |
+| `locality_name`            | 市区町村名                                | `Tokyo`                                                     |
+| `organization_name`        | 組織名                                    | `ExampleOrg`                                                |
+| `organizational_unit_name` | 組織単位名                                | `IT`                                                        |
+| `ca_key_type`              | CA 鍵のタイプ（RSA, EC など）              | `RSA`                                                       |
+| `ca_key_size`              | CA 鍵のビット長                            | `4096`                                                      |
+| `ca_validity_days`         | CA 証明書の有効期間（日数）               | `3650`                                                      |
+| `key_type`                 | サーバー鍵のタイプ                        | `RSA`                                                       |
+| `key_size`                 | サーバー鍵のビット長                      | `2048`                                                      |
+| `server_validity_days`     | サーバー証明書の有効期間（日数）          | `825`                                                       |
+| `tls_dir`                  | TLS 関連ディレクトリのルート             | `/etc/pki/tls`                                              |
+| `tls_private_key_dir`      | プライベートキー保存ディレクトリ          | `{{ tls_dir }}/private`                                     |
+| `tls_certificate_dir`      | 証明書保存ディレクトリ                    | `{{ tls_dir }}/certs`                                       |
+| `dhparam_file`             | Diffie-Hellman パラメータファイルパス     | `{{ tls_dir }}/dhparam.pem`                                 |
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
-
-Dependencies
+依存関係
 ------------
+- `common`
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
-
-Example Playbook
+サンプル Playbook
 ----------------
+```yaml
+- hosts: ca
+  roles:
+    - role: self_certificate_authority
+      common_name: "internal.example.com"
+      organization_name: "MyOrg"
+````
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+## ライセンス
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
-
-License
--------
-
-BSD
-
-Author Information
-------------------
-
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+This role is licensed under the Apache License, Version 2.0.
+See [LICENSE](../../LICENSE) for details.

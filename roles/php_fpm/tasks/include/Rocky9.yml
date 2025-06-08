@@ -1,12 +1,1 @@
----
-# tasks/include/RedHat file for php_fpm
-
-- name: PHPインストール
-  ansible.builtin.dnf:
-    name: "{{ php_rpm }}/common"
-    state: present
-  register: php_in
-
-- name: php-fpm インストール結果
-  ansible.builtin.debug:
-    var: php_in.results
+RedHat.yml

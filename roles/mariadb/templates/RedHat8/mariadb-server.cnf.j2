@@ -19,11 +19,9 @@ socket=/var/lib/mysql/mysql.sock
 log-error=/var/log/mariadb/mariadb.log
 pid-file=/run/mariadb/mariadb.pid
 expire_logs_days = 31
+character-set-server = utf8mb4
 slow_query_log=1
 slow_query_log_file=/var/log/mariadb/slow_query.log
-
-character-set-server = utf8
-collation-server = utf8_bin
 
 #
 # * Galera-related settings

@@ -27,7 +27,7 @@ ENV LANG=ja_JP.UTF-8
 USER ${USER}
 
 # ssh-keygen のための設定
-RUN ssh-keygen -f ~/.ssh/master.ecdsa.key -t rsa -N ""
+RUN ssh-keygen -f ~/.ssh/id_rsa -t rsa -N ""
 
 # ~/.local/bin を PATH に追加する設定を .bashrc に追記
 RUN echo 'export PATH="$HOME/.local/bin:$PATH"' >> /home/${USER}/.bashrc 
@@ -40,19 +40,14 @@ RUN python3 -m pip install --user --upgrade setuptools
 RUN python3 -m pip install --user flake8 autopep8
 
 WORKDIR /workspaces
-COPY ansible_Venv.txt /tmp/
+COPY ansible_galaxy.yml pip_ansible_requirements.txt /tmp/
 # Install Ansible lint and Ansible
-RUN pip3 install -r /tmp/ansible_Venv.txt
+RUN pip3 install -r /tmp/pip_ansible_requirements.txt 
 
 # コンテナ起動時に bash を対話モードで開く
 SHELL ["/bin/bash", "-lc"]
 CMD ["bash"]
 
 # ansibe追加モジュールのインストール
-RUN ansible-galaxy collection install community.libvirt
-RUN ansible-galaxy collection install community.crypto
-RUN ansible-galaxy collection install community.docker --upgrade
-RUN ansible-galaxy collection install community.general
-RUN ansible-galaxy collection install community.zabbix --upgrade
-RUN ansible-galaxy collection install freeipa.ansible_freeipa --upgrade
+RUN ansible-galaxy collection install -r /tmp/ansible_galaxy.yml
 

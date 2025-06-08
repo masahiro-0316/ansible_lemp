@@ -1,0 +1,22 @@
+{
+  "name": "docker-playweb - ansible",
+  "dockerComposeFile": "../docker-compose.yml",
+  "service": "ansible",
+  "remoteUser": "vscode",
+  // コンテナ側のディレクトリを指定
+  "workspaceFolder": "/workspace",
+
+  // Configure tool-specific properties.
+  "customizations": {
+    // Configure properties specific to VS Code.
+    "vscode": {
+      // コンテナ側のVScodeにインストールする拡張機能を指定
+      "extensions": [
+        "redhat.ansible",
+        "wholroyd.jinja",
+        "redhat.vscode-yaml",
+        "DavidAnson.vscode-markdownlint"
+      ]
+    }
+  }
+}
