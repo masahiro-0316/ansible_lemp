@@ -7,16 +7,19 @@
 - **playbook**
   - `site.yml`  ― すべての処理を呼び出すメインプレイブック。
   - `1st_setup.yml` ― SSH 設定や共通設定など、基本サーバーの初期構築を実施。
-  - `update_system.yml` ― OS のアップデートを行います。
+  - `update_system.yml` ― OS のアップデートを行います。  
+    - セキュリティアップデートのみ実行します。  
+    - 何らかのアップデートが実行された場合は、OS再起動が実行されます。
+    - 上記の２つが不要な場合は、`site.yml`から削除するかコメントアウトして下さい。
   - `4th_lemp.yml` ― LEMP 関連のロールを適用します。
+    - LEMP環境の作動確認のため`adminer`の設定ロールが組み込まれています。
+    - `adminer`への接続URL:`https://<サーバIP、ホスト名>/adminer**`
+    - 本プレイブックを使用してLEMP環境だけ作成したい場合は、`adminer`ロールは削除してしまって問題ありません。
 - **inventory**
   - `inventory/localhost.ini` ― ローカル環境向け設定。
   - `inventory/vagrant_development.ini` ― Vagrant 環境向け設定。
 - **group_vars / host_vars**  ― 接続先ごとの変数定義。
 - **roles**  ― nginx、mariadb、php_fpm など個別機能を実装したロール群。
-
-`4th_lemp.yml`にはLEMP環境の作動確認のため`adminer`の設定ロールが組み込まれています。
-本プレイブックを使用してLEMP環境だけ作成したい場合は、`adminer`ロールは削除してしまって問題ありません。
 
 ### インストールソフトウェアのバージョン指定
 
@@ -77,6 +80,25 @@ Vagrantイメージを使用して以下のOSへの実行検証済みとなり�
    ansible-galaxy collection install -r ansible_galaxy.yml
    ```
 
+3. Go言語制のサーバ設定テスト機能を設定する
+   [goss公式GitHub](https://github.com/goss-org/goss)
+
+   各ロールでインフラテストを実行しています。  
+   テストにはGo言語で作成されたサーバ設定テスト機能を使用しています。
+
+   ```bash
+   sudo curl -L https://github.com/goss-org/goss/releases/latest/download/goss-linux-amd64 -o /usr/local/bin/goss
+   sudo chmod +rx /usr/local/bin/goss
+   ```
+
+4. 実行後にデフォルト設定で以下のディレクトリが作成させる。
+
+- config_backup
+  - 各ロール実行後に設定ファイルの原本と編集後のファイルが格納される。  
+    OS名のディレクトリが原本、ホス名のディレクトリが実行ホストで変更後の設定ファイルが格納される。
+  - 自己署名署名書も格納される。
+  - ディレクトリは、`.gitignore`でアップデート対象外になっている。
+
 ## 使い方
 
 1. インベントリを選択します。ローカルで実行する場合は `inventory/localhost.ini`、開発用にVagrant で作成した仮想マシンへ実行する用に `inventory/vagrant_development.ini` が用意されている。
@@ -91,6 +113,8 @@ Vagrantイメージを使用して以下のOSへの実行検証済みとなり�
    ```bash
    ansible-playbook -i inventory/vagrant_development.ini site.yml
    ```
+
+   > `update_system.yml`が有効になっている場合`-e sec=false`を追加することでOSのフルアップデートで最新化を実行します。
 
 3. 必要に応じて `group_vars` や `host_vars` に定義されている各種変数を変更し、環境へ合わせた設定を行ってください。
 
@@ -123,9 +147,10 @@ docker compose run --rm ansible bash
 
 ### Docker利用時の留意点
 
-`.env`ファイルを使用してdockerコンテナ内のユーザとグループIDを設定している。
-ユーザIDとグループIDはデフォルトで1001で設定してある。
-利用者は、適宜Dockerを実行するユーザのIDと同じになるように修正をして下さい。
+- `.env`ファイルを使用してdockerコンテナ内のユーザとグループIDを設定している。
+- ユーザIDとグループIDはデフォルトで1001で設定してある。
+- 利用者は、適宜Dockerを実行するユーザのIDと同じになるように修正をして下さい。
+- Docker環境は、実行ユーザの`~/.ssh`書き込み権限でマウントする設定をしている。
 
 ## ライセンス
 

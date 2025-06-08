@@ -12,6 +12,6 @@ services:
     user: "${UID}:${GID}"
     volumes:
       - .:/workspace
-      - ~/.ssh:/home/vscode/.ssh:ro
+      - ~/.ssh:/home/vscode/.ssh
     tty: true
     stdin_open: true
