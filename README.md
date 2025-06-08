@@ -29,7 +29,13 @@
 
 ## 検証実施済み環境
 
-Vagrantイメージを使用して以下のOSでの実行検証済みとなります。
+Ansible実行環境
+
+- Python3.10
+
+実行したAnsibleのバージョンは同階層にある`pip_ansible_requirements.txt`をご確認ください。
+
+Vagrantイメージを使用して以下のOSへの実行検証済みとなります。
 
 - Rocky8
 - Rocky9
@@ -60,10 +66,13 @@ Vagrantイメージを使用して以下のOSでの実行検証済みとなり�
 ## 事前準備
 
 1. 必要な Python パッケージをインストールします。
+
    ```bash
    pip install -r pip_ansible_requirements.txt
    ```
+
 2. 利用する Ansible コレクションを取得します。
+
    ```bash
    ansible-galaxy collection install -r ansible_galaxy.yml
    ```
@@ -72,13 +81,17 @@ Vagrantイメージを使用して以下のOSでの実行検証済みとなり�
 
 1. インベントリを選択します。ローカルで実行する場合は `inventory/localhost.ini`、開発用にVagrant で作成した仮想マシンへ実行する用に `inventory/vagrant_development.ini` が用意されている。
 2. `site.yml` を実行してサーバーを構築します。
+
    ```bash
    ansible-playbook -i inventory/localhost.ini site.yml
    ```
+
    または
+
    ```bash
    ansible-playbook -i inventory/vagrant_development.ini site.yml
    ```
+
 3. 必要に応じて `group_vars` や `host_vars` に定義されている各種変数を変更し、環境へ合わせた設定を行ってください。
 
 ## group_vars で設定されている主な変数
@@ -103,6 +116,7 @@ Vagrantイメージを使用して以下のOSでの実行検証済みとなり�
 
 `docker-compose.yml` を利用すると、コンテナ内で Ansible を実行できます。
 以下のようにコンテナを起動し、シェルに入って操作します。
+
 ```bash
 docker compose run --rm ansible bash
 ```
@@ -121,6 +135,6 @@ Copyright 2025 古谷真大
  あなたがこのファイルを使用するためには、本ライセンスに従わなければなりません。  
  本ライセンスのコピーは下記の場所から入手できます。  
 
-     http://www.apache.org/licenses/LICENSE-2.0
+  [Apache License, Version 2.0オリジナルサイト：英語](http://www.apache.org/licenses/LICENSE-2.0)
 
 適用される法律または書面での同意によって命じられない限り、本ライセンスに基づいて頒布されるソフトウェアは、明示黙示を問わず、いかなる保証も条件もなしに「現状のまま」頒布されます。本ライセンスでの権利と制限を規定した文言については、本ライセンスを参照してください。 
