@@ -38,6 +38,6 @@ jobs:
       - name: Install Ansible tools
         run: pip3.12 install -r pip_ansible_requirements.txt
       - name: Syntax check
-        run: ansible-playbook -i inventory site.yml --syntax-check
+        run: ansible-playbook -i inventory/localhost.ini site.yml --syntax-check
       - name: Run ansible-lint
         run: ansible-lint -c .ansible-lint -v --show-relpath site.yml group_vars/* host_vars/* inventory/*
